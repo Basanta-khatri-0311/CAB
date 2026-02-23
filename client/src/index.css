@@ -1,1 +1,440 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
+
+/* ─── Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background-color: #000;
+  color: #e5e7eb;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ─── Animations ────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up   { animation: fadeUp 0.45s ease both; }
+.fade-up-1 { animation: fadeUp 0.45s ease 0.05s both; }
+.fade-up-2 { animation: fadeUp 0.45s ease 0.10s both; }
+.fade-up-3 { animation: fadeUp 0.45s ease 0.15s both; }
+.fade-up-4 { animation: fadeUp 0.45s ease 0.20s both; }
+.fade-up-5 { animation: fadeUp 0.45s ease 0.25s both; }
+.fade-up-6 { animation: fadeUp 0.45s ease 0.30s both; }
+
+/* ─── Layout ────────────────────────────────────────────── */
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.page-wrapper-wide {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ─── Page Headers ──────────────────────────────────────── */
+.page-header {
+  background: linear-gradient(180deg, #0d0d0d 0%, #000 100%);
+  border-bottom: 1px solid #1a1a1a;
+  padding: 60px 40px 40px;
+  text-align: center;
+}
+
+.page-header-left {
+  background: #050505;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 28px 40px;
+}
+
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.page-title {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.08;
+  margin-bottom: 14px;
+}
+
+.page-subtitle {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 480px;
+  margin: 0 auto 28px;
+  font-weight: 400;
+}
+
+.project-description {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 640px;
+  margin-top: 10px;
+  font-weight: 400;
+}
+
+/* ─── Status & Meta Pills ───────────────────────────────── */
+.meta-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.status-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-planning  { color: #fbbf24; background: #1c1600; border: 1px solid #92400e; }
+.status-ongoing   { color: #60a5fa; background: #030f1c; border: 1px solid #1e3a5f; }
+.status-completed { color: #34d399; background: #021310; border: 1px solid #064e3b; }
+
+.status-planning  .dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.status-ongoing   .dot { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+.status-completed .dot { background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+.budget-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  background: #0d0d0d;
+  border: 1px solid #1f1f1f;
+}
+
+/* ─── Filter Bar ────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: capitalize;
+  cursor: pointer;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #2a2a2a;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  border-color: #d97706;
+  color: #d97706;
+}
+
+.filter-btn.active {
+  background: #d97706;
+  color: #000;
+  font-weight: 700;
+}
+
+/* ─── Projects Grid ─────────────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #374151;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-top: 80px;
+}
+
+/* ─── Project Card ──────────────────────────────────────── */
+.project-card {
+  background: #080808;
+  border: 1px solid #1a1a1a;
+  border-radius: 16px;
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+  border-color: #2a2a2a;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.project-card:hover .project-card__arrow {
+  color: #d97706;
+  transform: translateX(3px);
+}
+
+.project-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f3f4f6;
+  line-height: 1.3;
+  margin: 12px 0 8px;
+}
+
+.project-card__desc {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.project-card__footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-card__budget-label {
+  color: #374151;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.project-card__budget-value {
+  color: #d97706;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.project-card__arrow {
+  color: #374151;
+  font-size: 18px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+/* ─── Stat Cards (ProjectDetails) ──────────────────────── */
+.stat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-2px); }
+
+.stat-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.stat-card__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.stat-card__icon { font-size: 20px; }
+
+.stat-card__value {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.stat-card--income  { background: #021310; border: 1px solid #064e3b; box-shadow: 0 0 30px rgba(16,185,129,0.06); }
+.stat-card--expense { background: #140505; border: 1px solid #5f1d1d; box-shadow: 0 0 30px rgba(239,68,68,0.06); }
+.stat-card--balance { background: #100900; border: 1px solid #78350f; box-shadow: 0 0 30px rgba(217,119,6,0.06); }
+
+.stat-card--income  .stat-card__icon,
+.stat-card--income  .stat-card__value { color: #10b981; }
+
+.stat-card--expense .stat-card__icon,
+.stat-card--expense .stat-card__value { color: #ef4444; }
+
+.stat-card--balance .stat-card__icon,
+.stat-card--balance .stat-card__value { color: #d97706; }
+
+/* ─── Chart Section ─────────────────────────────────────── */
+.chart-section {
+  background: #060606;
+  border: 1px solid #1a1a1a;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-tooltip {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+}
+
+.chart-tooltip__name  { color: #9ca3af; margin-bottom: 4px; font-size: 11px; }
+.chart-tooltip__value { color: #f9fafb; font-weight: 700; }
+
+/* ─── Transactions Table ────────────────────────────────── */
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tx-count {
+  background: #1a1a1a;
+  color: #6b7280;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #1a1a1a;
+}
+
+table { min-width: 100%; border-collapse: collapse; }
+
+thead { background: #0a0a0a; border-bottom: 1px solid #1f1f1f; }
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: #4b5563;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: 'Syne', sans-serif;
+}
+
+/* ─── Transaction Row ───────────────────────────────────── */
+.tx-row { border-bottom: 1px solid #111; transition: background 0.15s; }
+.tx-row:last-child { border-bottom: none; }
+.tx-row:hover { background: #0a0a0a; }
+
+.tx-row td {
+  padding: 13px 16px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.tx-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tx-type-badge--income  { color: #10b981; background: #021310; border: 1px solid #064e3b; }
+.tx-type-badge--expense { color: #ef4444; background: #140505; border: 1px solid #5f1d1d; }
+
+.tx-amount--income  { color: #10b981; font-weight: 600; }
+.tx-amount--expense { color: #ef4444; font-weight: 600; }
+
+.tx-source { color: #9ca3af; }
+.tx-desc   { color: #6b7280; }
+.tx-date   { color: #4b5563; font-size: 11px; white-space: nowrap; }
+
+/* ─── Loader ────────────────────────────────────────────── */
+.loader-screen {
+  min-height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loader-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #d97706;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+.loader-text {
+  color: #4b5563;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}

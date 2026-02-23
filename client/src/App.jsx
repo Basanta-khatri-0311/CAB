@@ -1,13 +1,16 @@
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Projects from "./pages/Projects";
+import ProjectDetails from "./pages/ProjectDetails";
 
 function App() {
-  useEffect(() => {
-    fetch("http://localhost:5500")
-      .then(res => res.text())
-      .then(data => console.log(data));
-  }, []);
-
-  return <h1>COB Frontend</h1>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

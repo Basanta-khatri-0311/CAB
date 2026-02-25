@@ -1,14 +1,41 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProjectsPage from "./pages/Admin/ProjectsPage"
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<Projects />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetails />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/projects"
+          element={
+            <ProtectedRoute adminOnly>
+              <ProjectsPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <Footer />
     </Router>
   );
 }

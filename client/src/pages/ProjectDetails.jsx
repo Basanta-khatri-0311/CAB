@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchProjectById } from "../services/api";
+import { fetchProjectById } from "../services/projects.api";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import TransactionRow from "../components/TransactionRow";
 

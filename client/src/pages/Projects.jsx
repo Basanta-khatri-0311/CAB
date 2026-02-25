@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchProjects } from "../services/api";
+import { fetchProjects } from "../services/projects.api";
 import ProjectCard from "../components/ProjectCard";
 
 const FILTERS = ["all", "planning", "ongoing", "completed"];
@@ -20,7 +20,7 @@ export default function Projects() {
       {/* Header */}
       <div className="page-header">
         <p className="section-eyebrow">◆ CRICKET ASSOCIATION OF BHALUHI</p>
-        <h1 className="page-title">Community Projects</h1>
+        <h1 className="page-title">CAB Projects</h1>
         <p className="page-subtitle">
           Track progress, budgets, and transactions for every initiative in the club.
         </p>

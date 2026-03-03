@@ -2065,3 +2065,11 @@ th {
 
 .form-btn-save:hover { background: #b45309; }
 .form-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Finances Page ─────────────────────────────────────── */
+.finances-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}

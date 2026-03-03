@@ -10,6 +10,19 @@ exports.addFinance = async (req, res) => {
   }
 };
 
+// Get All Finances (Admin)
+exports.getAllFinances = async (req, res) => {
+  try {
+    const finances = await Finance.find()
+      .populate("projectId")
+      .sort({ createdAt: -1 });
+
+    res.json(finances);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get Finance by Project
 exports.getFinanceByProject = async (req, res) => {
   try {

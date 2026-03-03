@@ -8,6 +8,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProjectsPage from "./pages/Admin/ProjectsPage"
+import FinancesPage from "./pages/Admin/FinancesPage";
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
           element={
             <ProtectedRoute adminOnly>
               <ProjectsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/finances"
+          element={
+            <ProtectedRoute adminOnly>
+              <FinancesPage />
             </ProtectedRoute>
           }
         />

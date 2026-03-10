@@ -67,9 +67,9 @@ export default function FinancesPage() {
     fetchFinances();
   };
 
-  const totalIncome  = finances.filter((f) => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
+  const totalIncome = finances.filter((f) => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
   const totalExpense = finances.filter((f) => f.type === "expense").reduce((s, f) => s + (f.amount || 0), 0);
-  const balance      = totalIncome - totalExpense;
+  const balance = totalIncome - totalExpense;
 
   return (
     <div>
@@ -82,7 +82,6 @@ export default function FinancesPage() {
       </div>
 
       <div className="page-wrapper">
-
         <div className="finances-summary fade-up">
           <div className="stat-card stat-card--income">
             <div className="stat-card__top">

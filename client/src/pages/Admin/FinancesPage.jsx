@@ -70,7 +70,6 @@ export default function FinancesPage() {
   const totalIncome = finances.filter((f) => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
   const totalExpense = finances.filter((f) => f.type === "expense").reduce((s, f) => s + (f.amount || 0), 0);
   const balance = totalIncome - totalExpense;
-
   return (
     <div>
       <div className="page-header-left">

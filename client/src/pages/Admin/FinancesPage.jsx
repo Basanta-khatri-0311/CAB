@@ -79,7 +79,6 @@ export default function FinancesPage() {
           <p className="project-description">Record and review income and expense transactions across all projects.</p>
         </div>
       </div>
-
       <div className="page-wrapper">
         <div className="finances-summary fade-up">
           <div className="stat-card stat-card--income">

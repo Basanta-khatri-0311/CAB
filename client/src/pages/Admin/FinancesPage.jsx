@@ -107,7 +107,6 @@ export default function FinancesPage() {
             <p className="stat-card__value">NPR {balance.toLocaleString()}</p>
           </div>
         </div>
-
         <div className="admin-page-header fade-up">
           <p style={{ color: "#4b5563", fontSize: "13px" }}>
             {finances.length} transaction{finances.length !== 1 ? "s" : ""} total

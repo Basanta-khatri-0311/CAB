@@ -91,7 +91,7 @@ export default function FinancesPage() {
             <p className="stat-card__value">NPR {totalIncome.toLocaleString()}</p>
           </div>
 
-          
+
           <div className="stat-card stat-card--expense">
             <div className="stat-card__top">
               <p className="stat-card__label">Total Expenses</p>
@@ -107,12 +107,14 @@ export default function FinancesPage() {
             <p className="stat-card__value">NPR {balance.toLocaleString()}</p>
           </div>
         </div>
+
         <div className="admin-page-header fade-up">
           <p style={{ color: "#4b5563", fontSize: "13px" }}>
             {finances.length} transaction{finances.length !== 1 ? "s" : ""} total
           </p>
           <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Add Transaction</button>
         </div>
+
 
         {loading ? (
           <div className="loader-screen" style={{ minHeight: "240px" }}>
@@ -133,6 +135,7 @@ export default function FinancesPage() {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {finances.length === 0 ? (
                   <tr>

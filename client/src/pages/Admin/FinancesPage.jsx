@@ -202,6 +202,7 @@ export default function FinancesPage() {
               <input type="text" name="sourceOrVendor" placeholder="e.g. Government Grant" value={formData.sourceOrVendor} onChange={handleChange} className="form-input" />
             </div>
 
+
             <div className="form-field">
               <label className="form-label">Description</label>
               <textarea name="description" placeholder="Brief note about this transaction..." value={formData.description} onChange={handleChange} className="form-textarea" />

@@ -20,35 +20,41 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="navbar__links">
           <Link to="/" className={`navbar__link ${isActive("/") ? "navbar__link--active" : ""}`}>
-            Home
-          </Link>
-          <Link to="/transparency" className={`navbar__link ${isActive("/transparency") ? "navbar__link--active" : ""}`}>
-            Transparency
-          </Link>
-          <Link to="/members" className={`navbar__link ${isActive("/members") ? "navbar__link--active" : ""}`}>
-            Members
-          </Link>
-          <Link to="/posts" className={`navbar__link ${isActive("/posts") ? "navbar__link--active" : ""}`}>
-            Posts
+            Arena
           </Link>
 
-          {user ? (
+          {user && (
             <>
+              <Link to="/transparency" className={`navbar__link ${isActive("/transparency") ? "navbar__link--active" : ""}`}>
+                Treasury
+              </Link>
               <Link to="/booking" className={`navbar__link ${isActive("/booking") ? "navbar__link--active" : ""}`}>
-                Book Turf
+                Net Practice
               </Link>
-              <Link to="/admin" className={`navbar__link ${isActive("/admin") ? "navbar__link--active" : ""}`}>
-                Admin
+              <Link to="/profile" className={`navbar__link ${isActive("/profile") ? "navbar__link--active" : ""}`}>
+                Profile
               </Link>
-              <button className="navbar__logout" onClick={logout}>
-                Logout
-              </button>
             </>
-          ) : (
-            <Link to="/login" className="navbar__btn">
-              Login
+          )}
+
+          {user?.role === 'admin' && (
+            <Link to="/admin" className={`navbar__link ${isActive("/admin") ? "navbar__link--active" : ""}`}>
+              Admin Panel
             </Link>
           )}
+
+          <div style={{ marginLeft: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
+            {user ? (
+              <button className="navbar__logout" onClick={logout}>
+                Sign Out
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="navbar__link">Sign In</Link>
+                <Link to="/register" className="navbar__btn">Join Association</Link>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Mobile Hamburger */}

@@ -1,16 +1,14 @@
 const express = require('express');
 const { 
-  getPublicStats, 
-  getPublicPosts, 
-  getPublicMembers, 
-  getPublicFinances 
+  getHomeData, 
+  getPublicMembers,
+  getPublicPosts
 } = require('../controllers/public.controller.js');
 
 const router = express.Router();
 
-router.get("/stats", getPublicStats);
-router.get("/posts", getPublicPosts);
+router.get("/home", getHomeData);
 router.get("/members", getPublicMembers);
-router.get("/finances", getPublicFinances);
+router.get("/posts", getPublicPosts);
 
 module.exports = router;

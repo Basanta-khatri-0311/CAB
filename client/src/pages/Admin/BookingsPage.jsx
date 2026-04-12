@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../api/axios";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchBookings = async () => {
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } };
-    const res = await axios.get("http://localhost:5000/api/bookings", config);
+    const res = await API.get("/bookings");
     setBookings(res.data);
     setLoading(false);
   };
@@ -17,12 +16,11 @@ export default function BookingsPage() {
   }, []);
 
   const updateStatus = async (id, status) => {
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } };
-    await axios.put(`http://localhost:5000/api/bookings/${id}`, { status }, config);
+    await API.put(`/bookings/${id}`, { status });
     fetchBookings();
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loader-screen"><div className="loader-spinner"></div></div>;
 
   return (
     <div className="page-wrapper fade-up">
@@ -35,10 +33,26 @@ export default function BookingsPage() {
           <tbody>
             {bookings.map(b => (
               <tr key={b._id} className="tx-row">
-                <td>{b.user.name}<br/><small>{b.user.email}</small></td>
-                <td>{new Date(b.date).toLocaleDateString()}</td>
-                <td>{b.slot}</td>
-                <td><span className={`status-badge ${b.status === 'confirmed' ? 'status-completed' : 'status-planning'}`}>{b.status}</span></td>
+                <td>
+                  {b.user ? (
+                    <>
+                      <span style={{ fontWeight: "600" }}>{b.user.name}</span>
+                      <br /><small style={{ color: "#6b7280" }}>{b.user.email}</small>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontWeight: "600", color: "#d97706" }}>Visitor: {b.visitorName}</span>
+                      <br /><small style={{ color: "#6b7280" }}>{b.visitorPhone}</small>
+                    </>
+                  )}
+                </td>
+                <td className="tx-date">{new Date(b.date).toLocaleDateString()}</td>
+                <td className="tx-source">{b.slot}</td>
+                <td>
+                  <span className={`status-badge ${b.status === 'confirmed' ? 'status-completed' : 'status-planning'}`} style={{ display: "inline-flex" }}>
+                    <span className="dot"></span> {b.status}
+                  </span>
+                </td>
                 <td>
                   <button onClick={() => updateStatus(b._id, 'confirmed')} style={{ color: "#34d399", background: "none", border: "none", cursor: "pointer", marginRight: "10px" }}>Confirm</button>
                   <button onClick={() => updateStatus(b._id, 'cancelled')} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>

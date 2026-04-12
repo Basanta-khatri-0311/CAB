@@ -35,7 +35,7 @@ const cards = [
     desc: "Manage association members and their roles.",
     icon: "◎",
     accent: "admin-card--amber",
-    to: "/members", // Direct to public members list for now, or add an admin member list later
+    to: "/admin/members",
   },
 ];
 

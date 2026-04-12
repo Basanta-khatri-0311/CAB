@@ -1,48 +1,97 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../api/axios";
 
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ title: "", content: "", image: "" });
+  const [editingId, setEditingId] = useState(null);
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:5000/api/posts");
-    setPosts(res.data);
-    setLoading(false);
+    try {
+      const res = await API.get("/posts");
+      setPosts(res.data);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
+    const uploadData = new FormData();
+    uploadData.append("image", file);
+    setLoading(true);
+
+    try {
+      const { data } = await API.post("/upload", uploadData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setFormData({ ...formData, image: data });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } };
-    await axios.post("http://localhost:5000/api/posts", formData, config);
-    setFormData({ title: "", content: "", image: "" });
-    fetchPosts();
+    try {
+      if (editingId) {
+        await API.put(`/posts/${editingId}`, formData);
+      } else {
+        await API.post("/posts", formData);
+      }
+      setFormData({ title: "", content: "", image: "" });
+      setEditingId(null);
+      fetchPosts();
+    } catch (err) { console.error(err); }
+  };
+
+  const handleEdit = (post) => {
+    setEditingId(post._id);
+    setFormData({ title: post.title, content: post.content, image: post.image || "" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const deletePost = async (id) => {
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } };
-    await axios.delete(`http://localhost:5000/api/posts/${id}`, config);
+    if (!window.confirm("Are you sure?")) return;
+    await API.delete(`/posts/${id}`);
     fetchPosts();
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loader-screen"><div className="loader-spinner"></div></div>;
 
   return (
     <div className="page-wrapper fade-up">
       <h1 className="page-title">Manage Posts</h1>
       
       <div className="login-card" style={{ maxWidth: "100%", marginBottom: "40px" }}>
-        <h2 className="section-title">New Post</h2>
+        <h2 className="section-title">{editingId ? "Edit Post" : "New Post"}</h2>
         <form onSubmit={handleSubmit}>
           <input className="login-input" placeholder="Title" required style={{ marginBottom: "10px" }} value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-          <input className="login-input" placeholder="Image URL" style={{ marginBottom: "10px" }} value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
+          
+          <div className="form-field">
+            <label className="form-label">Featured Image</label>
+            <input type="file" className="login-input" onChange={uploadFileHandler} style={{ padding: "8px" }} />
+            {formData.image && <p style={{ fontSize: "10px", color: "#10b981", marginTop: "5px" }}>Image uploaded: {formData.image}</p>}
+          </div>
+
           <textarea className="login-input" placeholder="Content" required rows="5" style={{ marginBottom: "10px" }} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})}></textarea>
-          <button type="submit" className="login-submit">Publish Post</button>
+          
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button type="submit" className="login-submit">
+              {editingId ? "Update Record" : "Publish News"}
+            </button>
+            {editingId && (
+              <button type="button" className="login-submit" style={{ background: "#374151" }} onClick={() => { setEditingId(null); setFormData({ title: "", content: "", image: "" }); }}>
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
@@ -54,9 +103,12 @@ export default function PostsPage() {
           <tbody>
             {posts.map(post => (
               <tr key={post._id} className="tx-row">
-                <td>{post.title}</td>
+                <td style={{ fontWeight: "600" }}>{post.title}</td>
                 <td>{new Date(post.createdAt).toLocaleDateString()}</td>
-                <td><button onClick={() => deletePost(post._id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Delete</button></td>
+                <td>
+                  <button onClick={() => handleEdit(post)} style={{ color: "#d97706", background: "none", border: "none", cursor: "pointer", marginRight: "12px" }}>Edit</button>
+                  <button onClick={() => deletePost(post._id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>

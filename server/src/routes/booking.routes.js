@@ -9,9 +9,17 @@ const {
 } = require("../controllers/booking.controller");
 const { protect, adminOnly } = require("../middleware/auth.middleware");
 
+// Optional protect for bookings
+const optionalProtect = async (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+     return protect(req, res, next);
+  }
+  next();
+};
+
 router.route("/")
   .get(protect, adminOnly, getAllBookings)
-  .post(protect, createBooking);
+  .post(optionalProtect, createBooking);
 
 router.route("/my")
   .get(protect, getMyBookings);

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
+import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
 
 export default function Booking() {
   const { user } = useAuth();
@@ -9,7 +10,9 @@ export default function Booking() {
   const [formData, setFormData] = useState({
     date: "",
     slot: "06:00 AM - 08:00 AM",
-    notes: ""
+    notes: "",
+    visitorName: "",
+    visitorPhone: ""
   });
   const [message, setMessage] = useState(null);
 
@@ -22,11 +25,12 @@ export default function Booking() {
   ];
 
   const fetchMyBookings = async () => {
+    if (!localStorage.getItem("token")) {
+      setLoading(false);
+      return;
+    }
     try {
-      const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      };
-      const res = await axios.get("http://localhost:5000/api/bookings/my", config);
+      const res = await API.get("/bookings/my");
       setBookings(res.data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -37,18 +41,15 @@ export default function Booking() {
 
   useEffect(() => {
     fetchMyBookings();
-  }, []);
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      };
-      await axios.post("http://localhost:5000/api/bookings", formData, config);
-      setMessage({ type: "success", text: "Booking request submitted!" });
-      setFormData({ ...formData, date: "", notes: "" });
-      fetchMyBookings();
+      await API.post("/bookings", formData);
+      setMessage({ type: "success", text: "Booking request submitted! Our manager will verify shortly." });
+      setFormData({ ...formData, date: "", notes: "", visitorName: "", visitorPhone: "" });
+      if (localStorage.getItem("token")) fetchMyBookings();
     } catch (error) {
       setMessage({ type: "error", text: error.response?.data?.message || "Error submitting booking" });
     }
@@ -58,7 +59,7 @@ export default function Booking() {
     return (
       <div className="loader-screen">
         <div className="loader-spinner"></div>
-        <div className="loader-text">Loading Bookings...</div>
+        <div className="loader-text">Loading Arena...</div>
       </div>
     );
   }
@@ -71,9 +72,9 @@ export default function Booking() {
         <p className="page-subtitle">Reserve your session at the CAB Professional Turf.</p>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: user ? "1fr 1fr" : "1fr", gap: "40px" }}>
         {/* Booking Form */}
-        <div className="login-card cricket-card" style={{ maxWidth: "100%" }}>
+        <div className="login-card cricket-card" style={{ maxWidth: user ? "100%" : "500px", margin: user ? "0" : "0 auto" }}>
           <h2 className="section-title">Schedule Session</h2>
           {message && (
             <div className={message.type === "success" ? "status-badge status-completed" : "login-error"} style={{ marginBottom: "20px", display: "block" }}>
@@ -81,6 +82,18 @@ export default function Booking() {
             </div>
           )}
           <form onSubmit={handleSubmit}>
+            {!user && (
+              <>
+                <div className="login-field">
+                  <label className="login-label">Full Name</label>
+                  <input type="text" className="login-input" required value={formData.visitorName} onChange={(e) => setFormData({ ...formData, visitorName: e.target.value })} />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Phone Number</label>
+                  <input type="text" className="login-input" required value={formData.visitorPhone} onChange={(e) => setFormData({ ...formData, visitorPhone: e.target.value })} />
+                </div>
+              </>
+            )}
             <div className="login-field">
               <label className="login-label">Practice Date</label>
               <input 
@@ -102,15 +115,16 @@ export default function Booking() {
               </select>
             </div>
             <div className="login-field">
-              <label className="login-label">Special Requirements (e.g. Bowling Machine)</label>
+              <label className="login-label">Special Requirements</label>
               <textarea 
                 className="login-input" 
                 rows="3"
+                placeholder="Bowling Machine, Bats/Balls, Coach help..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               ></textarea>
             </div>
-            <button type="submit" className="login-submit">Book Net Session</button>
+            <button type="submit" className="login-submit">Submit Booking Request</button>
           </form>
         </div>
 

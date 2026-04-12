@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 
 const financeSchema = new mongoose.Schema(
   {
+    donorType: {
+      type: String,
+      enum: ["member", "outside", "project"],
+      default: "member",
+    },
+    memberId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",

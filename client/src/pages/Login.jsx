@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import API from "../api/axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,30 +17,19 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5500/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        login(data);
-        localStorage.setItem("token", data.token);
-        navigate("/admin");
-      } else {
-        setError(data.message || "Invalid credentials.");
-      }
-    } catch {
-      setError("Could not connect to server.");
+      const { data } = await API.post("/auth/login", { email, password });
+      login(data);
+      localStorage.setItem("token", data.token);
+      navigate("/admin");
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-screen">
+    <div className="login-screen" style={{ flexGrow: 1 }}>
       <form className="login-card" onSubmit={submitHandler}>
         {/* <p className="section-eyebrow" style={{ textAlign: "center" }}>◆ Admin Access</p> */}
         <h2 className="login-title">Sign In</h2>

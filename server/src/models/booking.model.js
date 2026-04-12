@@ -5,7 +5,13 @@ const bookingSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+    },
+    visitorName: {
+      type: String,
+    },
+    visitorPhone: {
+      type: String,
     },
     date: {
       type: Date,

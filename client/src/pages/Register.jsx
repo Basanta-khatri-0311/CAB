@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axios";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -26,8 +26,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      // Assuming back-end has a register endpoint in auth routes
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      await API.post("/auth/register", formData);
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -37,11 +36,11 @@ export default function Register() {
   };
 
   return (
-    <div className="login-screen fade-up">
+    <div className="login-screen fade-up" style={{ flexGrow: 1 }}>
       <div className="login-card" style={{ maxWidth: "500px" }}>
         <div className="section-eyebrow" style={{ textAlign: "center" }}>Join the Association</div>
         <h1 className="login-title">Create Account</h1>
-        <p className="login-subtitle">Become a member of the Cricket Association of Bhairahawa.</p>
+        <p className="login-subtitle">Become a member of the Cricket Association of Bhaluhi.</p>
 
         {error && <div className="login-error">{error}</div>}
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
 import ProjectForm from "../../components/Admin/ProjectForm";
 import { useAuth } from "../../context/AuthContext";
@@ -10,8 +11,7 @@ const statusClass = {
 };
 
 export default function ProjectsPage() {
-  const { token } = useAuth();
-
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,9 +20,8 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch("http://localhost:5500/api/projects");
-      const data = await res.json();
-      setProjects(data);
+      const res = await API.get("/projects");
+      setProjects(res.data);
     } catch (err) {
       console.error("Failed to fetch projects", err);
       setError("Could not load projects.");
@@ -48,13 +47,7 @@ export default function ProjectsPage() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this project? This cannot be undone.")) return;
     try {
-      const res = await fetch(`http://localhost:5500/api/projects/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Delete failed");
+      await API.delete(`/projects/${id}`);
       fetchProjects();
     } catch (err) {
       alert("Failed to delete project. Please try again.");
@@ -62,20 +55,12 @@ export default function ProjectsPage() {
   };
 
   const handleSubmit = async (formData) => {
-    const url = editingProject
-      ? `http://localhost:5500/api/projects/${editingProject._id}`
-      : "http://localhost:5500/api/projects";
-
     try {
-      const res = await fetch(url, {
-        method: editingProject ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Save failed");
+      if (editingProject) {
+        await API.put(`/projects/${editingProject._id}`, formData);
+      } else {
+        await API.post("/projects", formData);
+      }
       setIsOpen(false);
       fetchProjects();
     } catch (err) {

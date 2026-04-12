@@ -9,6 +9,6 @@ const { protect, adminOnly } = require("../middleware/auth.middleware");
 
 router.get("/", getAllFinances);
 router.post("/", protect, adminOnly, addFinance);
-router.get("/:projectId", protect, adminOnly, getFinanceByProject);
+router.get("/:projectId", protect, getFinanceByProject);
 
 module.exports = router;

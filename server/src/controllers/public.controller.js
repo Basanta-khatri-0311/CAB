@@ -3,47 +3,68 @@ const Finance = require('../models/finance.model.js');
 const User = require('../models/user.model.js');
 const Post = require('../models/post.model.js');
 
-const getPublicStats = async (req, res) => {
-  try {
-    const totalProjects = await Project.countDocuments();
-    const completedProjects = await Project.countDocuments({ status: "completed" });
-    const ongoingProjects = await Project.countDocuments({ status: "ongoing" });
+const attachFullUrl = (item, field) => {
+  if (item[field] && !item[field].startsWith("http")) {
+    const baseUrl = process.env.BASE_URL || "http://localhost:5500";
+    item[field] = `${baseUrl}${item[field].startsWith("/") ? "" : "/"}${item[field]}`;
+  }
+  return item;
+};
 
+const getHomeData = async (req, res) => {
+  try {
+    // 1. Stats
     const incomeData = await Finance.aggregate([
       { $match: { type: "income" } },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
-
     const expenseData = await Finance.aggregate([
       { $match: { type: "expense" } },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
+    const totalIncome = incomeData[0]?.total || 0;
+    const totalExpense = expenseData[0]?.total || 0;
 
-    const totalIncome = incomeData.length > 0 ? incomeData[0].total : 0;
-    const totalExpense = expenseData.length > 0 ? expenseData[0].total : 0;
-    const remainingBalance = totalIncome - totalExpense;
-    const totalMembers = await User.countDocuments({ role: "member" });
-
-    res.json({
-      totalProjects,
-      completedProjects,
-      ongoingProjects,
+    const stats = {
       totalIncome,
       totalExpense,
-      remainingBalance,
-      totalMembers,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
-};
+      balance: totalIncome - totalExpense
+    };
 
-const getPublicPosts = async (req, res) => {
-  try {
-    const posts = await Post.find()
+    // 2. Members
+    const membersRaw = await User.find({})
+      .select("name photo roleInClub bio phone createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+    const members = membersRaw.map(m => attachFullUrl(m, 'photo'));
+
+    // 3. Posts
+    const postsRaw = await Post.find()
       .populate("author", "name")
-      .sort({ createdAt: -1 });
-    res.json(posts);
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+    const posts = postsRaw.map(p => attachFullUrl(p, 'image'));
+
+    // 4. Completed Projects with Money Used
+    const projects = await Project.find({ status: "completed" }).lean();
+    
+    // For each project, find sum of expenses
+    const projectsWithExpense = await Promise.all(projects.map(async (p) => {
+      const expenses = await Finance.aggregate([
+        { $match: { projectId: p._id, type: "expense" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } }
+      ]);
+      return { ...p, moneyUsed: expenses[0]?.total || 0 };
+    }));
+
+    res.json({
+      stats,
+      members,
+      posts,
+      completedProjects: projectsWithExpense
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -51,28 +72,32 @@ const getPublicPosts = async (req, res) => {
 
 const getPublicMembers = async (req, res) => {
   try {
-    const members = await User.find({ role: "member" })
+    const raw = await User.find({})
       .select("-password -email")
-      .sort({ name: 1 });
+      .sort({ name: 1 })
+      .lean();
+    const members = raw.map(m => attachFullUrl(m, 'photo'));
     res.json(members);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getPublicFinances = async (req, res) => {
+const getPublicPosts = async (req, res) => {
   try {
-    const finances = await Finance.find()
-      .sort({ date: -1 });
-    res.json(finances);
+    const raw = await Post.find()
+      .populate("author", "name")
+      .sort({ createdAt: -1 })
+      .lean();
+    const posts = raw.map(p => attachFullUrl(p, 'image'));
+    res.json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 module.exports = {
-  getPublicStats,
-  getPublicPosts,
+  getHomeData,
   getPublicMembers,
-  getPublicFinances
+  getPublicPosts
 };

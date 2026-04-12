@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import API from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/ui/Modal";
 
 const defaultForm = {
+  donorType: "member",
+  memberId: "",
   projectId: "",
   type: "income",
   amount: "",
@@ -12,34 +15,38 @@ const defaultForm = {
 };
 
 export default function FinancesPage() {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
+  const [members, setMembers] = useState([]);
   const [finances, setFinances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState(defaultForm);
 
-  const fetchProjects = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:5500/api/projects");
-      const data = await res.json();
-      setProjects(data);
-    } catch (err) { console.error("Failed to fetch projects", err); }
+      const [pRes, mRes, fRes] = await Promise.all([
+        API.get("/projects"),
+        API.get("/public/members"),
+        API.get("/finances")
+      ]);
+      setProjects(pRes.data);
+      setMembers(mRes.data);
+      setFinances(fRes.data);
+    } catch (err) {
+      console.error("Failed to fetch data", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const fetchFinances = async () => {
-    try {
-      const res = await fetch("http://localhost:5500/api/finances");
-      const data = await res.json();
-      setFinances(data);
-    } catch (err) { console.error("Failed to fetch finances", err); }
-    finally { setLoading(false); }
+  useEffect(() => { fetchData(); }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  useEffect(() => { fetchProjects(); fetchFinances(); }, []);
-
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const closeModal = () => { setIsOpen(false); setFormData(defaultForm); };
 
@@ -47,180 +54,159 @@ export default function FinancesPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      await fetch("http://localhost:5500/api/finances", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-        body: JSON.stringify(formData),
-      });
+      // Prepare data
+      const data = { ...formData };
+      if (data.donorType === 'member') data.projectId = undefined;
+      if (data.donorType === 'outside') { data.projectId = undefined; data.memberId = undefined; }
+      if (data.donorType === 'project') data.memberId = undefined;
+
+      await API.post("/finances", data);
       closeModal();
-      fetchFinances();
+      fetchData();
     } catch (err) { console.error("Failed to save", err); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this transaction?")) return;
-    await fetch("http://localhost:5500/api/finances/" + id, {
-      method: "DELETE",
-      headers: { Authorization: "Bearer " + token },
-    });
-    fetchFinances();
+    try {
+      await API.delete(`/finances/${id}`);
+      fetchData();
+    } catch (err) { console.error("Delete failed", err); }
   };
 
-  const totalIncome = finances.filter((f) => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
-  const totalExpense = finances.filter((f) => f.type === "expense").reduce((s, f) => s + (f.amount || 0), 0);
-  const balance = totalIncome - totalExpense;
+  const totalIncome = finances.filter(f => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
+  const totalExpense = finances.filter(f => f.type === "expense").reduce((s, f) => s + (f.amount || 0), 0);
+
   return (
-    <div>
-      <div className="page-header-left">
-        <div className="page-wrapper">
-          <p className="section-eyebrow">◆ Admin Panel</p>
-          <h1 className="page-title">Manage Finances</h1>
-          <p className="project-description">Record and review income and expense transactions across all projects.</p>
+    <div className="page-wrapper fade-up">
+      <header className="page-header" style={{ marginBottom: "40px" }}>
+        <div className="section-eyebrow">Finance Control</div>
+        <h1 className="page-title">Ledger Management</h1>
+        <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+          <div className="status-badge status-completed">Income: NPR {totalIncome.toLocaleString()}</div>
+          <div className="status-badge status-ongoing">Expenses: NPR {totalExpense.toLocaleString()}</div>
         </div>
+      </header>
+
+      <div className="admin-page-header">
+        <h2 className="section-title">Collections Hub</h2>
+        <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Entry</button>
       </div>
 
-
-      <div className="page-wrapper">
-        <div className="finances-summary fade-up">
-          <div className="stat-card stat-card--income">
-            <div className="stat-card__top">
-              <p className="stat-card__label">Total Income</p>
-              <span className="stat-card__icon">&#8593;</span>
-            </div>
-            <p className="stat-card__value">NPR {totalIncome.toLocaleString()}</p>
-          </div>
-
-
-          <div className="stat-card stat-card--expense">
-            <div className="stat-card__top">
-              <p className="stat-card__label">Total Expenses</p>
-              <span className="stat-card__icon">&#8595;</span>
-            </div>
-            <p className="stat-card__value">NPR {totalExpense.toLocaleString()}</p>
-          </div>
-          <div className="stat-card stat-card--balance">
-            <div className="stat-card__top">
-              <p className="stat-card__label">Balance</p>
-              <span className="stat-card__icon">&#9672;</span>
-            </div>
-            <p className="stat-card__value">NPR {balance.toLocaleString()}</p>
-          </div>
-        </div>
-
-        <div className="admin-page-header fade-up">
-          <p style={{ color: "#4b5563", fontSize: "13px" }}>
-            {finances.length} transaction{finances.length !== 1 ? "s" : ""} total
-          </p>
-          <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Add Transaction</button>
-        </div>
-
-
-        {loading ? (
-          <div className="loader-screen" style={{ minHeight: "240px" }}>
-            <div className="loader-spinner" />
-            <p className="loader-text">Loading transactions</p>
-          </div>
-        ) : (
-          <div className="admin-table-wrapper fade-up">
-            <table className="admin-table">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px", marginTop: "30px" }}>
+        {/* General Collections */}
+        <div className="project-card" style={{ background: "#050505" }}>
+          <h3 className="section-title">General Fund</h3>
+          <div className="table-wrapper">
+            <table>
               <thead>
                 <tr>
-                  <th>Project</th>
+                  <th>Source</th>
+                  <th>Amt</th>
                   <th>Type</th>
-                  <th>Amount (NPR)</th>
-                  <th>Source / Vendor</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
-
               <tbody>
-                {finances.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="admin-table__empty">No transactions yet. Add one to get started.</td>
+                {finances.filter(f => !f.projectId).map(f => (
+                  <tr key={f._id} className="tx-row">
+                    <td className="tx-source">{f.memberId?.name || f.sourceOrVendor}</td>
+                    <td style={{ color: f.type === 'income' ? '#10b981' : '#ef4444' }}>{f.amount}</td>
+                    <td>{f.donorType}</td>
                   </tr>
-                ) : (
-                  finances.map((f) => (
-                    <tr key={f._id}>
-                      <td className="admin-table__name">{f.projectId?.title ?? "—"}</td>
-                      <td>
-                        <span className={"tx-type-badge " + (f.type === "income" ? "tx-type-badge--income" : "tx-type-badge--expense")}>
-                          {f.type === "income" ? "↑" : "↓"} {f.type}
-                        </span>
-                      </td>
-                      <td className={f.type === "income" ? "tx-amount--income" : "tx-amount--expense"}>
-                        {f.type === "income" ? "+" : "−"} {f.amount?.toLocaleString()}
-                      </td>
-                      <td className="tx-source">{f.sourceOrVendor ?? "—"}</td>
-                      <td className="tx-desc">{f.description ?? "—"}</td>
-                      <td className="tx-date">
-                        {f.date ? new Date(f.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "—"}
-                      </td>
-                      <td>
-                        <div className="admin-table__actions">
-                          <button className="admin-btn-delete" onClick={() => handleDelete(f._id)}>Delete</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
-        )}
+        </div>
 
-        <Modal isOpen={isOpen} onClose={closeModal} title="Add Transaction">
-          <form onSubmit={handleSubmit}>
-
-            <div className="form-field">
-              <label className="form-label">Project</label>
-              <select name="projectId" value={formData.projectId} onChange={handleChange} className="form-select" required>
-                <option value="">Select a project...</option>
-                {projects.map((p) => (
-                  <option key={p._id} value={p._id}>{p.title}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label className="form-label">Type</label>
-              <select name="type" value={formData.type} onChange={handleChange} className="form-select">
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label className="form-label">Amount (NPR)</label>
-              <input type="number" name="amount" placeholder="e.g. 25000" value={formData.amount} onChange={handleChange} className="form-input" min="0" required />
-            </div>
-
-            <div className="form-field">
-              <label className="form-label">Source / Vendor</label>
-              <input type="text" name="sourceOrVendor" placeholder="e.g. Government Grant" value={formData.sourceOrVendor} onChange={handleChange} className="form-input" />
-            </div>
-
-
-            <div className="form-field">
-              <label className="form-label">Description</label>
-              <textarea name="description" placeholder="Brief note about this transaction..." value={formData.description} onChange={handleChange} className="form-textarea" />
-            </div>
-
-            <div className="form-field">
-              <label className="form-label">Date</label>
-              <input type="date" name="date" value={formData.date} onChange={handleChange} className="form-input" />
-            </div>
-
-            <div className="form-actions">
-              <button type="button" className="form-btn-cancel" onClick={closeModal}>Cancel</button>
-              <button type="submit" className="form-btn-save" disabled={saving}>{saving ? "Saving..." : "Save Transaction"}</button>
-            </div>
-
-          </form>
-        </Modal>
+        {/* Project Specific Cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {projects.map(p => {
+            const projectTX = finances.filter(f => f.projectId?._id === p._id);
+            if (projectTX.length === 0) return null;
+            return (
+              <div key={p._id} className="project-card cricket-card">
+                <h3 className="project-card__title">{p.title}</h3>
+                <div style={{ fontSize: "12px", color: "#6b7280", marginBottom: "10px" }}>Project Specific Audit</div>
+                <div className="table-wrapper">
+                  <table style={{ background: "transparent" }}>
+                    <tbody>
+                      {projectTX.map(tx => (
+                        <tr key={tx._id} style={{ borderBottom: "1px solid #111" }}>
+                          <td style={{ padding: "8px 0", fontSize: "12px" }}>{tx.sourceOrVendor}</td>
+                          <td style={{ textAlign: "right", color: "#d97706" }}>NPR {tx.amount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={closeModal} title="Record Transaction">
+        <form onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label className="form-label">Collection Type</label>
+            <select name="donorType" value={formData.donorType} onChange={handleChange} className="form-select">
+              <option value="member">Inside Member</option>
+              <option value="outside">Outside Member / Source</option>
+              <option value="project">Specific Project Funding</option>
+            </select>
+          </div>
+
+          {formData.donorType === 'member' && (
+            <div className="form-field">
+              <label className="form-label">Select Member</label>
+              <select name="memberId" value={formData.memberId} onChange={handleChange} className="form-select" required>
+                <option value="">Choose member...</option>
+                {members.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
+              </select>
+            </div>
+          )}
+
+          {formData.donorType === 'project' && (
+            <div className="form-field">
+              <label className="form-label">Target Project</label>
+              <select name="projectId" value={formData.projectId} onChange={handleChange} className="form-select" required>
+                <option value="">Choose project...</option>
+                {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+              </select>
+            </div>
+          )}
+
+          <div className="form-field">
+            <label className="form-label">Type</label>
+            <select name="type" value={formData.type} onChange={handleChange} className="form-select">
+              <option value="income">Income (Collection)</option>
+              <option value="expense">Expense (Payout)</option>
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Amount (NPR)</label>
+            <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="form-input" required />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Source / Vendor Name</label>
+            <input type="text" name="sourceOrVendor" value={formData.sourceOrVendor} onChange={handleChange} className="form-input" placeholder={formData.donorType === 'outside' ? "Full Name of Donor" : "e.g. Grass Maintenance"} />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Description</label>
+            <textarea name="description" value={formData.description} onChange={handleChange} className="form-textarea" />
+          </div>
+
+          <div className="form-actions">
+            <button type="button" className="form-btn-cancel" onClick={closeModal}>Cancel</button>
+            <button type="submit" className="form-btn-save" disabled={saving}>{saving ? "Recording..." : "Save Record"}</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

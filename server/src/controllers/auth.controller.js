@@ -4,7 +4,7 @@ const { generateToken } = require('../utils/generateToken.js');
 // Register
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone, roleInClub, bio } = req.body;
+    const { name, email, password, phone, roleInClub, bio, role } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -15,7 +15,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      role: "member", // Default to member during public registration
+      role: role || "member", // Allow direct role assignment (useful for initial admin setup)
       phone,
       roleInClub,
       bio,

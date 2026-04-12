@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("userInfo");
     localStorage.removeItem("token");
     setUser(null);
+    window.location.href = "/"; // Force refresh and redirect to home
   };
 
   return (

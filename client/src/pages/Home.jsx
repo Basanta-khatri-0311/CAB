@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const statConfig = [
-  { key: "totalProjects",     label: "Total Projects",     icon: "◈", format: (v) => v,                           colorClass: "" },
-  { key: "completedProjects", label: "Completed Projects", icon: "✓", format: (v) => v,                           colorClass: "" },
-  { key: "totalMembers",      label: "Total Members",      icon: "◎", format: (v) => v,                           colorClass: "" },
-  { key: "totalIncome",       label: "Total Funds Raised", icon: "↑", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--green" },
-  { key: "totalExpense",      label: "Total Expenses",     icon: "↓", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--red" },
-  { key: "remainingBalance",  label: "Remaining Balance",  icon: "◆", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--amber" },
+  { key: "totalIncome",       label: "Money Collected", icon: "🏏", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--green" },
+  { key: "totalExpense",      label: "Expenses Done",     icon: "🏟️", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--red" },
+  { key: "remainingBalance",  label: "Balance available",  icon: "🏆", format: (v) => `NPR ${v.toLocaleString()}`, colorClass: "home-v2__stat-value--amber" },
 ];
 
 export default function Home() {
@@ -18,9 +16,8 @@ export default function Home() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:5500/api/public/stats");
-        const data = await res.json();
-        setStats(data);
+        const res = await axios.get("http://localhost:5000/api/public/stats");
+        setStats(res.data);
       } catch {
         setError(true);
       } finally {
@@ -34,25 +31,32 @@ export default function Home() {
     <div className="home-v2">
 
       {/* ── Hero ── */}
-      <div className="home-v2__hero">
-        <div className="home-v2__eyebrow">
-          ◆ Official Transparency Portal
-        </div>
+      <div className="home-v2__hero" style={{ backgroundImage: `url('/Users/basantkhatri/.gemini/antigravity/brain/36992476-ebb9-47b4-8ad3-6819f8a65aec/cricket_hero_bg_1776016684214.png')` }}>
+        <div className="stadium-overlay"></div>
+        
+        <div className="home-v2__hero-content">
+          <div className="home-v2__eyebrow">
+            ◆ Promoting Cricket Excellence
+          </div>
 
-        <h1 className="home-v2__title">
-          Cricket Association<br />
-          of <span>Bhaluhi</span>
-        </h1>
+          <h1 className="home-v2__title">
+            Cricket Association<br />
+            of <span>Bhairahawa</span>
+          </h1>
 
-        <p className="home-v2__subtitle">
-          View all community projects, financial reports, and development
-          activities — fully transparent and open to everyone.
-        </p>
+          <p className="home-v2__subtitle" style={{ color: "#9ca3af" }}>
+            The official portal of Bhairahawa Cricket. Track our growth, 
+            support our players, and ensure transparency for a better future.
+          </p>
 
-        <div className="home-v2__actions">
-          <Link to="/projects" className="home-v2__btn-primary">
-            View Projects
-          </Link>
+          <div className="home-v2__actions">
+            <Link to="/transparency" className="home-v2__btn-primary">
+              View Records
+            </Link>
+            <Link to="/members" className="home-v2__btn-secondary">
+              Our Squad
+            </Link>
+          </div>
         </div>
 
         <div className="home-v2__scroll-cue">

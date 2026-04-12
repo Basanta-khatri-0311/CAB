@@ -14,7 +14,7 @@ export default function Navbar() {
       <div className="navbar__inner">
         {/* Logo */}
         <Link to="/" className="navbar__logo">
-          <span className="navbar__logo-dot">◆</span> COB
+          <span className="navbar__logo-dot">◆</span> CAB
         </Link>
 
         {/* Desktop Links */}
@@ -22,14 +22,23 @@ export default function Navbar() {
           <Link to="/" className={`navbar__link ${isActive("/") ? "navbar__link--active" : ""}`}>
             Home
           </Link>
-          <Link to="/projects" className={`navbar__link ${isActive("/projects") ? "navbar__link--active" : ""}`}>
-            Projects
+          <Link to="/transparency" className={`navbar__link ${isActive("/transparency") ? "navbar__link--active" : ""}`}>
+            Transparency
+          </Link>
+          <Link to="/members" className={`navbar__link ${isActive("/members") ? "navbar__link--active" : ""}`}>
+            Members
+          </Link>
+          <Link to="/posts" className={`navbar__link ${isActive("/posts") ? "navbar__link--active" : ""}`}>
+            Posts
           </Link>
 
           {user ? (
             <>
+              <Link to="/booking" className={`navbar__link ${isActive("/booking") ? "navbar__link--active" : ""}`}>
+                Book Turf
+              </Link>
               <Link to="/admin" className={`navbar__link ${isActive("/admin") ? "navbar__link--active" : ""}`}>
-                Dashboard
+                Admin
               </Link>
               <button className="navbar__logout" onClick={logout}>
                 Logout

@@ -21,6 +21,19 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "member"],
       default: "member",
     },
+    photo: {
+      type: String,
+    },
+    roleInClub: {
+      type: String,
+      default: "Player",
+    },
+    phone: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

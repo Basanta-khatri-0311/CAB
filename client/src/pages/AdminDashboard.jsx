@@ -17,11 +17,25 @@ const cards = [
     to: "/admin/finances",
   },
   {
+    title: "Manage Posts",
+    desc: "Create and manage club announcements and reports.",
+    icon: "✎",
+    accent: "admin-card--blue",
+    to: "/admin/posts",
+  },
+  {
+    title: "Manage Bookings",
+    desc: "Review and confirm turf practice slots from members.",
+    icon: "✓",
+    accent: "admin-card--green",
+    to: "/admin/bookings",
+  },
+  {
     title: "Members",
-    desc: "Manage association members and roles (coming soon).",
+    desc: "Manage association members and their roles.",
     icon: "◎",
     accent: "admin-card--amber",
-    to: null,
+    to: "/members", // Direct to public members list for now, or add an admin member list later
   },
 ];
 

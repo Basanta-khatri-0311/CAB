@@ -5,10 +5,17 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
+import Transparency from "./pages/Transparency";
+import Members from "./pages/Members";
+import PostList from "./pages/PostList";
+import Booking from "./pages/Booking";
+import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProjectsPage from "./pages/Admin/ProjectsPage"
 import FinancesPage from "./pages/Admin/FinancesPage";
+import AdminPostsPage from "./pages/Admin/PostsPage";
+import AdminBookingsPage from "./pages/Admin/BookingsPage";
 
 function App() {
   return (
@@ -17,8 +24,20 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetails />} />
+        <Route path="/transparency" element={<Transparency />} />
+        <Route path="/members" element={<Members />} />
+        <Route path="/posts" element={<PostList />} />
+        <Route
+          path="/booking"
+          element={
+            <ProtectedRoute>
+              <Booking />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin"
           element={
@@ -40,6 +59,22 @@ function App() {
           element={
             <ProtectedRoute adminOnly>
               <FinancesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/posts"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminPostsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminBookingsPage />
             </ProtectedRoute>
           }
         />

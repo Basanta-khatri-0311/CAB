@@ -5,7 +5,7 @@ const financeSchema = new mongoose.Schema(
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
-      required: true,
+      required: false,
     },
     type: {
       type: String,

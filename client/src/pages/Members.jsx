@@ -40,31 +40,44 @@ export default function Members() {
 
       <div className="projects-grid">
         {members.map((member) => (
-          <div key={member._id} className="member-card fade-up">
-            <div className="member-card__image-container">
-              {member.photo ? (
-                <img src={member.photo} alt={member.name} className="member-card__img" />
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#d97706", fontSize: "48px", fontWeight: "bold", background: "#050505" }}>
-                  {member.name.charAt(0)}
+          <div key={member._id} className="project-card cricket-card">
+            <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+              <div style={{
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                backgroundColor: "#1a1a1a",
+                overflow: "hidden",
+                border: "2px solid #d97706"
+              }}>
+                {member.photo ? (
+                  <img src={member.photo} alt={member.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#d97706", fontSize: "24px", fontWeight: "bold" }}>
+                    {member.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div>
+                <h3 className="project-card__title" style={{ margin: 0 }}>{member.name}</h3>
+                <div className="status-badge status-ongoing" style={{ marginTop: "5px" }}>
+                  <span className="dot"></span> {member.roleInClub || "Player"}
                 </div>
-              )}
+              </div>
             </div>
-            
-            <div className="member-card__content">
-              <h3 className="member-card__title">{member.name}</h3>
-              <p className="member-card__position">{member.roleInClub || "Association Member"}</p>
-              
-              <p className="member-card__bio">
-                {member.bio || "Active member of the Bhaluhi Cricket Association contributing to the growth of local sports."}
-              </p>
 
-              {member.phone && (
-                <div className="member-card__phone">
-                  <span className="member-card__phone-icon">📞</span>
-                  {member.phone}
+            <p className="project-card__desc" style={{ marginTop: "20px" }}>
+              {member.bio || "Active member of the squad contributing to the growth of local cricket."}
+            </p>
+
+            <div className="project-card__footer" style={{ marginTop: "auto" }}>
+              <div>
+                <div className="project-card__budget-label">Debut</div>
+                <div className="project-card__budget-value" style={{ fontSize: "12px", color: "#6b7280" }}>
+                  {new Date(member.createdAt).toLocaleDateString()}
                 </div>
-              )}
+              </div>
+              <div className="project-card__arrow">🏏</div>
             </div>
           </div>
         ))}

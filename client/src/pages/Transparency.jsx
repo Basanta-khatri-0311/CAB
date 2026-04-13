@@ -35,10 +35,10 @@ export default function Transparency() {
 
   return (
     <div className="page-wrapper-wide fade-up">
-      <header className="page-header" style={{ marginBottom: "50px", borderRadius: "24px", border: "1px solid #1a1a1a" }}>
+      <header className="page-header mb-[50px] rounded-3xl border border-[#1a1a1a]">
         <div className="section-eyebrow">Internal Audit</div>
         <h1 className="page-title">Detailed Transparency</h1>
-        <p className="page-subtitle" style={{ margin: "10px auto" }}>
+        <p className="page-subtitle my-[10px] mx-auto">
           Exclusive member view of all contributions and expenditures.
         </p>
       </header>
@@ -63,19 +63,19 @@ export default function Transparency() {
             {finances.map((tx) => (
               <tr key={tx._id} className="tx-row">
                 <td className="tx-date">{new Date(tx.date).toLocaleDateString()}</td>
-                <td className="tx-source" style={{ fontWeight: "600", color: "#f3f4f6" }}>
+                <td className="tx-source font-semibold text-[#f3f4f6]">
                   {tx.donorType === 'member' && tx.memberId ? tx.memberId.name : tx.sourceOrVendor}
                 </td>
                 <td>
                   <span className={`status-badge ${
                     tx.donorType === 'member' ? 'status-completed' : 
                     tx.donorType === 'outside' ? 'status-ongoing' : 'status-planning'
-                  }`} style={{ fontSize: "9px" }}>
+                  } text-[9px]`}>
                     <span className="dot"></span> {tx.donorType || 'Other'}
                   </span>
                 </td>
                 <td className="tx-desc">
-                  {tx.projectId ? <span><strong style={{ color: "#d97706" }}>[{tx.projectId.title}]</strong> </span> : ""}
+                  {tx.projectId ? <span><strong className="text-[#d97706]">[{tx.projectId.title}]</strong> </span> : ""}
                   {tx.description}
                 </td>
                 <td className={tx.type === 'income' ? 'tx-amount--income' : 'tx-amount--expense'}>

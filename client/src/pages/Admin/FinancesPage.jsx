@@ -80,10 +80,10 @@ export default function FinancesPage() {
 
   return (
     <div className="page-wrapper fade-up">
-      <header className="page-header" style={{ marginBottom: "40px" }}>
+      <header className="page-header mb-10">
         <div className="section-eyebrow">Finance Control</div>
         <h1 className="page-title">Ledger Management</h1>
-        <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+        <div className="flex gap-5 mt-5">
           <div className="status-badge status-completed">Income: NPR {totalIncome.toLocaleString()}</div>
           <div className="status-badge status-ongoing">Expenses: NPR {totalExpense.toLocaleString()}</div>
         </div>
@@ -94,9 +94,9 @@ export default function FinancesPage() {
         <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Entry</button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px", marginTop: "30px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-[30px]">
         {/* General Collections */}
-        <div className="project-card" style={{ background: "#050505" }}>
+        <div className="project-card bg-[#050505]">
           <h3 className="section-title">General Fund</h3>
           <div className="table-wrapper">
             <table>
@@ -111,7 +111,7 @@ export default function FinancesPage() {
                 {finances.filter(f => !f.projectId).map(f => (
                   <tr key={f._id} className="tx-row">
                     <td className="tx-source">{f.memberId?.name || f.sourceOrVendor}</td>
-                    <td style={{ color: f.type === 'income' ? '#10b981' : '#ef4444' }}>{f.amount}</td>
+                    {f.type === 'income' ? <td className="text-[#10b981]">{f.amount}</td> : <td className="text-[#ef4444]">{f.amount}</td>}
                     <td>{f.donorType}</td>
                   </tr>
                 ))}
@@ -121,21 +121,21 @@ export default function FinancesPage() {
         </div>
 
         {/* Project Specific Cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="flex flex-col gap-5">
           {projects.map(p => {
             const projectTX = finances.filter(f => f.projectId?._id === p._id);
             if (projectTX.length === 0) return null;
             return (
               <div key={p._id} className="project-card cricket-card">
                 <h3 className="project-card__title">{p.title}</h3>
-                <div style={{ fontSize: "12px", color: "#6b7280", marginBottom: "10px" }}>Project Specific Audit</div>
+                <div className="text-[12px] text-[#6b7280] mb-[10px]">Project Specific Audit</div>
                 <div className="table-wrapper">
-                  <table style={{ background: "transparent" }}>
+                  <table className="bg-transparent">
                     <tbody>
                       {projectTX.map(tx => (
-                        <tr key={tx._id} style={{ borderBottom: "1px solid #111" }}>
-                          <td style={{ padding: "8px 0", fontSize: "12px" }}>{tx.sourceOrVendor}</td>
-                          <td style={{ textAlign: "right", color: "#d97706" }}>NPR {tx.amount}</td>
+                        <tr key={tx._id} className="border-b border-[#111]">
+                          <td className="py-2 text-[12px]">{tx.sourceOrVendor}</td>
+                          <td className="text-right text-[#d97706]">NPR {tx.amount}</td>
                         </tr>
                       ))}
                     </tbody>

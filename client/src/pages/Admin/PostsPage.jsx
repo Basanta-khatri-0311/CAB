@@ -69,25 +69,25 @@ export default function PostsPage() {
     <div className="page-wrapper fade-up">
       <h1 className="page-title">Manage Posts</h1>
       
-      <div className="login-card" style={{ maxWidth: "100%", marginBottom: "40px" }}>
+      <div className="login-card max-w-full mb-10">
         <h2 className="section-title">{editingId ? "Edit Post" : "New Post"}</h2>
         <form onSubmit={handleSubmit}>
-          <input className="login-input" placeholder="Title" required style={{ marginBottom: "10px" }} value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+          <input className="login-input mb-[10px]" placeholder="Title" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
           
           <div className="form-field">
             <label className="form-label">Featured Image</label>
-            <input type="file" className="login-input" onChange={uploadFileHandler} style={{ padding: "8px" }} />
-            {formData.image && <p style={{ fontSize: "10px", color: "#10b981", marginTop: "5px" }}>Image uploaded: {formData.image}</p>}
+            <input type="file" className="login-input p-2" onChange={uploadFileHandler} />
+            {formData.image && <p className="text-[10px] text-[#10b981] mt-[5px]">Image uploaded: {formData.image}</p>}
           </div>
 
-          <textarea className="login-input" placeholder="Content" required rows="5" style={{ marginBottom: "10px" }} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})}></textarea>
+          <textarea className="login-input mb-[10px]" placeholder="Content" required rows="5" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})}></textarea>
           
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div className="flex gap-[10px]">
             <button type="submit" className="login-submit">
               {editingId ? "Update Record" : "Publish News"}
             </button>
             {editingId && (
-              <button type="button" className="login-submit" style={{ background: "#374151" }} onClick={() => { setEditingId(null); setFormData({ title: "", content: "", image: "" }); }}>
+              <button type="button" className="login-submit bg-gray-700 hover:bg-gray-600" onClick={() => { setEditingId(null); setFormData({ title: "", content: "", image: "" }); }}>
                 Cancel
               </button>
             )}
@@ -103,11 +103,11 @@ export default function PostsPage() {
           <tbody>
             {posts.map(post => (
               <tr key={post._id} className="tx-row">
-                <td style={{ fontWeight: "600" }}>{post.title}</td>
+                <td className="font-semibold">{post.title}</td>
                 <td>{new Date(post.createdAt).toLocaleDateString()}</td>
                 <td>
-                  <button onClick={() => handleEdit(post)} style={{ color: "#d97706", background: "none", border: "none", cursor: "pointer", marginRight: "12px" }}>Edit</button>
-                  <button onClick={() => deletePost(post._id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Delete</button>
+                  <button onClick={() => handleEdit(post)} className="text-[#d97706] bg-none border-none cursor-pointer mr-3 hover:text-white transition-colors">Edit</button>
+                  <button onClick={() => deletePost(post._id)} className="text-[#ef4444] bg-none border-none cursor-pointer hover:text-white transition-colors">Delete</button>
                 </td>
               </tr>
             ))}

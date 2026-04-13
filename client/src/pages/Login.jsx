@@ -28,9 +28,9 @@ export default function Login() {
   };
 
   return (
-    <div className="login-screen" style={{ flexGrow: 1 }}>
+    <div className="login-screen flex-grow">
       <form className="login-card" onSubmit={submitHandler}>
-        {/* <p className="section-eyebrow" style={{ textAlign: "center" }}>◆ Admin Access</p> */}
+        {/* <p className="section-eyebrow text-center">◆ Admin Access</p> */}
         <h2 className="login-title">Sign In</h2>
         <p className="login-subtitle">Restricted to authorised members only.</p>
 

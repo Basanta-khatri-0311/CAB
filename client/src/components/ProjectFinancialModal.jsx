@@ -27,19 +27,19 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`${project.title} - Financial Audit`}>
        {!user ? (
-         <p style={{ textAlign: "center", padding: "20px", color: "#6b7280" }}>Please login as a member to view detailed financial audits.</p>
+         <p className="text-center p-5 text-gray-500">Please login as a member to view detailed financial audits.</p>
        ) : loading ? (
-         <div style={{ textAlign: "center", padding: "20px" }}><div className="loader-spinner"></div></div>
+         <div className="text-center p-5"><div className="loader-spinner"></div></div>
        ) : (
          <div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
-               <div className="stat-card stat-card--income" style={{ padding: "15px" }}>
+            <div className="grid grid-cols-2 gap-2.5 mb-5">
+               <div className="stat-card stat-card--income p-[15px]">
                   <p className="stat-card__label">Project Income</p>
-                  <p className="stat-card__value" style={{ fontSize: "18px" }}>NPR {totalIncome.toLocaleString()}</p>
+                  <p className="stat-card__value text-lg">NPR {totalIncome.toLocaleString()}</p>
                </div>
-               <div className="stat-card stat-card--expense" style={{ padding: "15px" }}>
+               <div className="stat-card stat-card--expense p-[15px]">
                   <p className="stat-card__label">Project Expense</p>
-                  <p className="stat-card__value" style={{ fontSize: "18px" }}>NPR {totalExpense.toLocaleString()}</p>
+                  <p className="stat-card__value text-lg">NPR {totalExpense.toLocaleString()}</p>
                </div>
             </div>
 
@@ -50,7 +50,7 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
                   </thead>
                   <tbody>
                      {finances.length === 0 ? (
-                       <tr><td colSpan="3" style={{ textAlign: "center", padding: "15px", color: "#4b5563" }}>No transactions recorded yet.</td></tr>
+                       <tr><td colSpan="3" className="text-center p-[15px] text-gray-600">No transactions recorded yet.</td></tr>
                      ) : (
                        finances.map(f => (
                          <tr key={f._id} className="tx-row">
@@ -70,8 +70,8 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
                </table>
             </div>
 
-            <div style={{ marginTop: "20px", textAlign: "right", color: "#6b7280", fontSize: "12px" }}>
-               Remaining balance for this project: <span style={{ color: "#d97706", fontWeight: "700" }}>NPR {(totalIncome - totalExpense).toLocaleString()}</span>
+            <div className="mt-5 text-right text-gray-500 text-xs">
+               Remaining balance for this project: <span className="text-[#d97706] font-bold">NPR {(totalIncome - totalExpense).toLocaleString()}</span>
             </div>
          </div>
        )}

@@ -58,30 +58,30 @@ export default function Profile() {
 
   return (
     <div className="page-wrapper fade-up">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "40px", alignItems: "start" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-10 items-start">
         
         {/* Left: Profile Photo & Stats */}
         <div>
-          <div className="project-card" style={{ textAlign: "center", padding: "40px" }}>
-            <div style={{ width: "160px", height: "160px", borderRadius: "50%", backgroundColor: "#111", margin: "0 auto 20px", border: "3px solid #d97706", overflow: "hidden", position: "relative" }}>
-              {formData.photo ? <img src={formData.photo} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ fontSize: "64px", lineHeight: "160px", color: "#d97706" }}>{user.name.charAt(0)}</div>}
+          <div className="project-card text-center p-10">
+            <div className="w-40 h-40 rounded-full bg-[#111] mx-auto mb-5 border-[3px] border-[#d97706] overflow-hidden relative">
+              {formData.photo ? <img src={formData.photo} alt={user.name} className="w-full h-full object-cover" /> : <div className="text-[64px] leading-[160px] text-[#d97706]">{user.name.charAt(0)}</div>}
             </div>
-            <h2 className="modal-title" style={{ marginBottom: "5px" }}>{user.name}</h2>
-            <p className="status-badge status-completed" style={{ display: "inline-flex" }}>{user.roleInClub}</p>
+            <h2 className="modal-title mb-[5px]">{user.name}</h2>
+            <p className="status-badge status-completed inline-flex">{user.roleInClub}</p>
             
-            <div style={{ marginTop: "30px", borderTop: "1px solid #1a1a1a", paddingTop: "20px" }}>
+            <div className="mt-[30px] border-t border-[#1a1a1a] pt-[20px]">
               <p className="project-card__budget-label">Total Contributions</p>
-              <h3 style={{ color: "#d97706", fontSize: "24px" }}>NPR {donations.reduce((sum, d) => sum + d.amount, 0).toLocaleString()}</h3>
+              <h3 className="text-[#d97706] text-2xl">NPR {donations.reduce((sum, d) => sum + d.amount, 0).toLocaleString()}</h3>
             </div>
           </div>
         </div>
 
         {/* Right: Edit Form & Transactions */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+        <div className="flex flex-col gap-[30px]">
           
-          <div className="login-card" style={{ maxWidth: "100%" }}>
+          <div className="login-card max-w-full">
             <h2 className="section-title">Edit Profile</h2>
-            {message && <p className="status-badge status-completed" style={{ width: "100%", marginBottom: "20px", display: "flex", justifyContent: "center" }}>{message}</p>}
+            {message && <p className="status-badge status-completed w-full mb-5 flex justify-center">{message}</p>}
             <form onSubmit={handleSubmit}>
               <div className="form-field">
                 <label className="form-label">Profile Photo</label>
@@ -106,8 +106,8 @@ export default function Profile() {
           </div>
 
           <div className="table-wrapper">
-             <div style={{ padding: "20px", borderBottom: "1px solid #1a1a1a" }}>
-               <h3 className="section-title" style={{ fontSize: "16px", marginBottom: "0" }}>Your Contributions</h3>
+             <div className="p-5 border-b border-[#1a1a1a]">
+               <h3 className="section-title text-[16px] mb-0">Your Contributions</h3>
              </div>
              <table>
                <thead>
@@ -115,7 +115,7 @@ export default function Profile() {
                </thead>
                <tbody>
                   {donations.length === 0 ? (
-                    <tr><td colSpan="3" style={{ textAlign: "center", color: "#4b5563", padding: "20px" }}>No transactions found yet.</td></tr>
+                    <tr><td colSpan="3" className="text-center text-gray-600 p-5">No transactions found yet.</td></tr>
                   ) : (
                     donations.map(d => (
                       <tr key={d._id} className="tx-row">

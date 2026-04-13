@@ -43,7 +43,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div style={{ marginLeft: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
+          <div className="ml-5 flex gap-3 items-center">
             {user ? (
               <button className="navbar__logout" onClick={logout}>
                 Sign Out

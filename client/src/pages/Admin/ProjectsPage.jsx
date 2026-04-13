@@ -85,7 +85,7 @@ export default function ProjectsPage() {
 
         {/* Top bar */}
         <div className="admin-page-header fade-up">
-          <p style={{ color: "#4b5563", fontSize: "13px" }}>
+          <p className="text-gray-600 text-[13px]">
             {projects.length} project{projects.length !== 1 ? "s" : ""} total
           </p>
           <button className="admin-add-btn" onClick={handleAdd}>
@@ -98,7 +98,7 @@ export default function ProjectsPage() {
 
         {/* Table */}
         {loading ? (
-          <div className="loader-screen" style={{ minHeight: "240px" }}>
+          <div className="loader-screen min-h-[240px]">
             <div className="loader-spinner" />
             <p className="loader-text">Loading projects</p>
           </div>

@@ -66,18 +66,18 @@ export default function Booking() {
 
   return (
     <div className="page-wrapper fade-up">
-      <header className="page-header" style={{ marginBottom: "60px", borderRadius: "20px" }}>
+      <header className="page-header mb-[60px] rounded-[20px]">
         <div className="section-eyebrow">High Performance Center</div>
         <h1 className="page-title">Net Practice</h1>
         <p className="page-subtitle">Reserve your session at the CAB Professional Turf.</p>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: user ? "1fr 1fr" : "1fr", gap: "40px" }}>
+      <div className={`grid gap-10 ${user ? 'grid-cols-2' : 'grid-cols-1'}`}>
         {/* Booking Form */}
-        <div className="login-card cricket-card" style={{ maxWidth: user ? "100%" : "500px", margin: user ? "0" : "0 auto" }}>
+        <div className={`login-card cricket-card ${user ? 'max-w-full m-0' : 'max-w-[500px] mx-auto'}`}>
           <h2 className="section-title">Schedule Session</h2>
           {message && (
-            <div className={message.type === "success" ? "status-badge status-completed" : "login-error"} style={{ marginBottom: "20px", display: "block" }}>
+            <div className={`${message.type === "success" ? "status-badge status-completed" : "login-error"} mb-5 block`}>
               {message.text}
             </div>
           )}
@@ -149,7 +149,7 @@ export default function Booking() {
                       <span className={`status-badge ${
                         b.status === 'confirmed' ? 'status-completed' : 
                         b.status === 'pending' ? 'status-planning' : 'login-error'
-                      }`} style={{ display: "inline-flex" }}>
+                      } inline-flex`}>
                         <span className="dot"></span> {b.status === 'confirmed' ? 'On Field' : b.status}
                       </span>
                     </td>
@@ -157,7 +157,7 @@ export default function Booking() {
                 ))}
               </tbody>
             </table>
-            {bookings.length === 0 && <div className="empty-state" style={{ padding: "20px" }}>No sessions scheduled</div>}
+            {bookings.length === 0 && <div className="empty-state p-5">No sessions scheduled</div>}
           </div>
         </div>
       </div>

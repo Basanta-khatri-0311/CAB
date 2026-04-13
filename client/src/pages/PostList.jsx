@@ -30,7 +30,7 @@ export default function PostList() {
 
   return (
     <div className="page-wrapper fade-up">
-      <header className="page-header" style={{ marginBottom: "60px", borderRadius: "20px" }}>
+      <header className="page-header mb-[60px] rounded-[20px]">
         <div className="section-eyebrow">Announcements</div>
         <h1 className="page-title">Club Feed</h1>
         <p className="page-subtitle">
@@ -38,21 +38,21 @@ export default function PostList() {
         </p>
       </header>
 
-      <div className="projects-grid" style={{ gridTemplateColumns: "1fr" }}>
+      <div className="projects-grid grid-cols-1">
         {posts.map((post) => (
-          <article key={post._id} className="project-card" style={{ cursor: "default" }}>
+          <article key={post._id} className="project-card cursor-default">
             {post.image && (
               <img 
                 src={post.image} 
                 alt={post.title} 
-                style={{ width: "100%", height: "300px", objectFit: "cover", borderRadius: "12px", marginBottom: "20px" }} 
+                className="w-full h-[300px] object-cover rounded-[12px] mb-5" 
               />
             )}
-            <div className="section-eyebrow" style={{ marginBottom: "5px" }}>
+            <div className="section-eyebrow mb-[5px]">
               {new Date(post.createdAt).toLocaleDateString()} • By {post.author.name}
             </div>
-            <h2 className="page-title" style={{ fontSize: "28px", textAlign: "left" }}>{post.title}</h2>
-            <div className="project-card__desc" style={{ fontSize: "16px", color: "#e5e7eb", whiteSpace: "pre-wrap" }}>
+            <h2 className="page-title text-[28px] text-left">{post.title}</h2>
+            <div className="project-card__desc text-[16px] text-[#e5e7eb] whitespace-pre-wrap">
               {post.content}
             </div>
           </article>

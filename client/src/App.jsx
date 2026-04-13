@@ -11,6 +11,7 @@ import PostList from "./pages/PostList";
 import Booking from "./pages/Booking";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProjectsPage from "./pages/Admin/ProjectsPage"
 import FinancesPage from "./pages/Admin/FinancesPage";
@@ -22,9 +23,10 @@ import Profile from "./pages/Profile";
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="app-container">
         <Navbar />
-        <main className="app-main">
+        <main className="app-main min-h-[80vh]">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />

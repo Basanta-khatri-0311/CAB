@@ -36,26 +36,26 @@ export default function BookingsPage() {
                 <td>
                   {b.user ? (
                     <>
-                      <span style={{ fontWeight: "600" }}>{b.user.name}</span>
-                      <br /><small style={{ color: "#6b7280" }}>{b.user.email}</small>
+                      <span className="font-semibold">{b.user.name}</span>
+                      <br /><small className="text-gray-500">{b.user.email}</small>
                     </>
                   ) : (
                     <>
-                      <span style={{ fontWeight: "600", color: "#d97706" }}>Visitor: {b.visitorName}</span>
-                      <br /><small style={{ color: "#6b7280" }}>{b.visitorPhone}</small>
+                      <span className="font-semibold text-[#d97706]">Visitor: {b.visitorName}</span>
+                      <br /><small className="text-gray-500">{b.visitorPhone}</small>
                     </>
                   )}
                 </td>
                 <td className="tx-date">{new Date(b.date).toLocaleDateString()}</td>
                 <td className="tx-source">{b.slot}</td>
                 <td>
-                  <span className={`status-badge ${b.status === 'confirmed' ? 'status-completed' : 'status-planning'}`} style={{ display: "inline-flex" }}>
+                  <span className={`status-badge ${b.status === 'confirmed' ? 'status-completed' : 'status-planning'} inline-flex`}>
                     <span className="dot"></span> {b.status}
                   </span>
                 </td>
                 <td>
-                  <button onClick={() => updateStatus(b._id, 'confirmed')} style={{ color: "#34d399", background: "none", border: "none", cursor: "pointer", marginRight: "10px" }}>Confirm</button>
-                  <button onClick={() => updateStatus(b._id, 'cancelled')} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
+                  <button onClick={() => updateStatus(b._id, 'confirmed')} className="text-[#34d399] bg-none border-none cursor-pointer mr-2.5 hover:text-white transition-colors">Confirm</button>
+                  <button onClick={() => updateStatus(b._id, 'cancelled')} className="text-[#ef4444] bg-none border-none cursor-pointer hover:text-white transition-colors">Cancel</button>
                 </td>
               </tr>
             ))}

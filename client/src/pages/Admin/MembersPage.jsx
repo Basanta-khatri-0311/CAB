@@ -95,7 +95,7 @@ export default function MembersPage() {
         <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Add Member</button>
       </header>
 
-      <div className="table-wrapper" style={{ marginTop: "30px" }}>
+      <div className="table-wrapper mt-[30px]">
         <table>
           <thead>
             <tr>
@@ -111,22 +111,22 @@ export default function MembersPage() {
             {users.map(u => (
               <tr key={u._id} className="tx-row">
                 <td>
-                  <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#111", overflow: "hidden", border: "1px solid #d97706" }}>
-                    {u.photo ? <img src={u.photo} alt={u.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ fontSize: "14px", lineHeight: "40px", textAlign: "center", color: "#d97706" }}>{u.name.charAt(0)}</div>}
+                  <div className="w-10 h-10 rounded-full bg-[#111] overflow-hidden border border-[#d97706]">
+                    {u.photo ? <img src={u.photo} alt={u.name} className="w-full h-full object-cover" /> : <div className="text-[14px] leading-10 text-center text-[#d97706]">{u.name.charAt(0)}</div>}
                   </div>
                 </td>
-                <td style={{ fontWeight: "600" }}>{u.name}</td>
+                <td className="font-semibold">{u.name}</td>
                 <td className="tx-desc">{u.email}</td>
                 <td>
-                  <span className={`status-badge ${u.role === 'admin' ? 'status-completed' : 'status-ongoing'}`} style={{ fontSize: "9px" }}>
+                  <span className={`status-badge ${u.role === 'admin' ? 'status-completed' : 'status-ongoing'} text-[9px]`}>
                     {u.role}
                   </span>
                 </td>
-                <td style={{ color: "#d97706", fontSize: "12px", fontWeight: "500" }}>{u.roleInClub}</td>
+                <td className="text-[#d97706] text-[12px] font-medium">{u.roleInClub}</td>
                 <td>
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    <button onClick={() => handleEdit(u)} style={{ color: "#d97706", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
-                    <button onClick={() => handleDelete(u._id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>Delete</button>
+                  <div className="flex gap-3">
+                    <button onClick={() => handleEdit(u)} className="text-[#d97706] bg-none border-none cursor-pointer">Edit</button>
+                    <button onClick={() => handleDelete(u._id)} className="text-[#ef4444] bg-none border-none cursor-pointer">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -144,7 +144,7 @@ export default function MembersPage() {
           <div className="form-field">
             <label className="form-label">Profile Photo</label>
             <input type="file" className="form-input" onChange={uploadFileHandler} />
-            {formData.photo && <p style={{ fontSize: "10px", color: "#10b981", marginTop: "5px" }}>Photo uploaded: {formData.photo}</p>}
+            {formData.photo && <p className="text-[10px] text-[#10b981] mt-[5px]">Photo uploaded: {formData.photo}</p>}
           </div>
           <div className="form-field">
             <label className="form-label">Email Address</label>
@@ -154,7 +154,7 @@ export default function MembersPage() {
             <label className="form-label">Password {editingId && "(Leave blank to keep current)"}</label>
             <input type="password" name="password" value={formData.password} onChange={handleChange} className="form-input" required={!editingId} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+          <div className="grid grid-cols-2 gap-4">
             <div className="form-field">
               <label className="form-label">System Role</label>
               <select name="role" value={formData.role} onChange={handleChange} className="form-select">

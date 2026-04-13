@@ -36,9 +36,9 @@ export default function Register() {
   };
 
   return (
-    <div className="login-screen fade-up" style={{ flexGrow: 1 }}>
-      <div className="login-card" style={{ maxWidth: "500px" }}>
-        <div className="section-eyebrow" style={{ textAlign: "center" }}>Join the Association</div>
+    <div className="login-screen fade-up flex-grow">
+      <div className="login-card max-w-[500px]">
+        <div className="section-eyebrow text-center">Join the Association</div>
         <h1 className="login-title">Create Account</h1>
         <p className="login-subtitle">Become a member of the Cricket Association of Bhaluhi.</p>
 
@@ -67,7 +67,7 @@ export default function Register() {
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+          <div className="grid grid-cols-2 gap-[15px]">
             <div className="login-field">
               <label className="login-label">Password</label>
               <input
@@ -90,7 +90,7 @@ export default function Register() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+          <div className="grid grid-cols-2 gap-[15px]">
             <div className="login-field">
               <label className="login-label">Phone Number</label>
               <input
@@ -131,8 +131,8 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="login-subtitle" style={{ marginTop: "20px" }}>
-          Already have an account? <Link to="/login" style={{ color: "#d97706", fontWeight: "600" }}>Login</Link>
+        <p className="login-subtitle mt-5">
+          Already have an account? <Link to="/login" className="text-[#d97706] font-semibold">Login</Link>
         </p>
       </div>
     </div>

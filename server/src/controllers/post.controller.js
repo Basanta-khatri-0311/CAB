@@ -20,7 +20,7 @@ exports.getPosts = async (req, res) => {
 
 exports.updatePost = async (req, res) => {
   try {
-    const post = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const post = await Post.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
     res.json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });

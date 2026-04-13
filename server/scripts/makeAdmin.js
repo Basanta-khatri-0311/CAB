@@ -11,7 +11,7 @@ const makeAdmin = async (email) => {
     const user = await User.findOneAndUpdate(
       { email },
       { role: 'admin' },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (user) {
       console.log(`Success! ${email} is now an admin.`);

@@ -33,7 +33,7 @@ exports.getAllBookings = async (req, res) => {
 
 exports.updateBookingStatus = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+    const booking = await Booking.findByIdAndUpdate(req.params.id, { status: req.body.status }, { returnDocument: 'after' });
     res.json(booking);
   } catch (error) {
     res.status(400).json({ message: error.message });

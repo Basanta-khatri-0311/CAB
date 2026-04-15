@@ -190,17 +190,14 @@ export default function FinancesPage() {
             <label className="form-label">Amount (NPR)</label>
             <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="form-input" required />
           </div>
-
           <div className="form-field">
             <label className="form-label">Source / Vendor Name</label>
             <input type="text" name="sourceOrVendor" value={formData.sourceOrVendor} onChange={handleChange} className="form-input" placeholder={formData.donorType === 'outside' ? "Full Name of Donor" : "e.g. Grass Maintenance"} />
           </div>
-
           <div className="form-field">
             <label className="form-label">Description</label>
             <textarea name="description" value={formData.description} onChange={handleChange} className="form-textarea" />
           </div>
-
           <div className="form-actions">
             <button type="button" className="form-btn-cancel" onClick={closeModal}>Cancel</button>
             <button type="submit" className="form-btn-save" disabled={saving}>{saving ? "Recording..." : "Save Record"}</button>

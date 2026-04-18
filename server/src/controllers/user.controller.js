@@ -49,13 +49,14 @@ exports.updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const { name, email, role, roleInClub, phone, bio } = req.body;
+    const { name, email, role, roleInClub, phone, bio, status } = req.body;
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
     user.roleInClub = roleInClub || user.roleInClub;
     user.phone = phone || user.phone;
     user.bio = bio || user.bio;
+    user.status = status || user.status;
 
     if (req.body.password) {
       user.password = req.body.password;
@@ -84,7 +85,9 @@ exports.getProfile = async (req, res) => {
     const raw = await User.findById(req.user._id).select("-password").lean();
     const user = attachFullUrl(raw, 'photo');
     // Also get their personal donations
-    const donations = await Finance.find({ memberId: req.user._id }).sort({ date: -1 });
+    const donations = await Finance.find({ memberId: req.user._id })
+      .populate("projectId", "title")
+      .sort({ date: -1 });
     res.json({ user, donations });
   } catch (error) {
     res.status(500).json({ message: error.message });

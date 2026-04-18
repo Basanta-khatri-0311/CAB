@@ -15,6 +15,7 @@ exports.getAllFinances = async (req, res) => {
   try {
     const finances = await Finance.find()
       .populate("projectId")
+      .populate("memberId", "name")
       .sort({ createdAt: -1 });
 
     res.json(finances);
@@ -28,7 +29,9 @@ exports.getFinanceByProject = async (req, res) => {
   try {
     const finance = await Finance.find({
       projectId: req.params.projectId,
-    }).sort({ createdAt: -1 });
+    })
+    .populate("memberId", "name")
+    .sort({ createdAt: -1 });
 
     res.json(finance);
   } catch (error) {
@@ -65,6 +68,26 @@ exports.transferBalance = async (req, res) => {
     });
 
     res.status(201).json({ expense, income });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update Finance
+exports.updateFinance = async (req, res) => {
+  try {
+    const updated = await Finance.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Delete Finance
+exports.deleteFinance = async (req, res) => {
+  try {
+    await Finance.findByIdAndDelete(req.params.id);
+    res.json({ message: "Record deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

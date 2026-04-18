@@ -32,7 +32,7 @@ const getHomeData = async (req, res) => {
     };
 
     // 2. Members
-    const membersRaw = await User.find({})
+    const membersRaw = await User.find({ status: "active" })
       .select("name photo roleInClub bio phone createdAt")
       .sort({ createdAt: -1 })
       .lean();
@@ -46,11 +46,10 @@ const getHomeData = async (req, res) => {
       .lean();
     const posts = postsRaw.map(p => attachFullUrl(p, 'image'));
 
-    // 4. Completed Projects with Money Used
-    const projects = await Project.find({ status: "completed" }).lean();
+    // 4. All Projects with Money Used
+    const allProjectsRaw = await Project.find().sort({ createdAt: -1 }).lean();
     
-    // For each project, find sum of expenses
-    const projectsWithExpense = await Promise.all(projects.map(async (p) => {
+    const projects = await Promise.all(allProjectsRaw.map(async (p) => {
       const expenses = await Finance.aggregate([
         { $match: { projectId: p._id, type: "expense" } },
         { $group: { _id: null, total: { $sum: "$amount" } } }
@@ -62,7 +61,7 @@ const getHomeData = async (req, res) => {
       stats,
       members,
       posts,
-      completedProjects: projectsWithExpense
+      projects
     });
 
   } catch (error) {
@@ -72,7 +71,7 @@ const getHomeData = async (req, res) => {
 
 const getPublicMembers = async (req, res) => {
   try {
-    const raw = await User.find({})
+    const raw = await User.find({ status: "active" })
       .select("-password -email")
       .sort({ name: 1 })
       .lean();

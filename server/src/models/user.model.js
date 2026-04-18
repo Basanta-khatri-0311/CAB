@@ -25,14 +25,19 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     roleInClub: {
-      type: String,
-      default: "Player",
+      type: [String],
+      default: ["Player"],
     },
     phone: {
       type: String,
     },
     bio: {
       type: String,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "active", "rejected"],
+      default: "pending",
     },
   },
   { timestamps: true }

@@ -32,7 +32,9 @@ exports.getProjectById = async (req, res) => {
     // Get all finance entries for this project
     const transactions = await Finance.find({
       projectId: req.params.id,
-    }).sort({ createdAt: -1 });
+    })
+      .populate("memberId", "name")
+      .sort({ createdAt: -1 });
 
     // Calculate totals
     const totalIncome = transactions

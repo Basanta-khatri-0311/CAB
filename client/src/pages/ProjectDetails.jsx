@@ -117,24 +117,68 @@ export default function ProjectDetails() {
           </PieChart>
         </div>
 
-        {/* Transactions */}
-        <div className="fade-up">
+        {/* Member Contributions Section */}
+        <div className="fade-up mb-[60px]">
           <h2 className="section-title">
-            Transactions
-            <span className="tx-count">{transactions.length}</span>
+            Member Contributions
+            <span className="tx-count">{transactions.filter(t => t.memberId).length}</span>
           </h2>
           <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  {["Type", "Amount (NPR)", "Source / Vendor", "Description", "Date"].map((h) => (
-                    <th key={h}>{h}</th>
-                  ))}
+                  <th>Member</th>
+                  <th>Amount</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((t) => (
-                  <TransactionRow key={t._id} transaction={t} />
+                {transactions.filter(t => t.memberId).length === 0 ? (
+                  <tr><td colSpan="3" className="text-center text-gray-500 py-4">No member contributions yet.</td></tr>
+                ) : (
+                  transactions.filter(t => t.memberId).map((t) => (
+                    <tr key={t._id} className="tx-row">
+                      <td className="font-semibold text-[#d97706]">{t.memberId.name}</td>
+                      <td className="text-[#10b981]">NPR {t.amount?.toLocaleString()}</td>
+                      <td className="tx-date">{new Date(t.date).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Other Transactions */}
+        <div className="fade-up">
+          <h2 className="section-title">
+            Project Ledgers
+            <span className="tx-count">{transactions.filter(t => !t.memberId).length}</span>
+          </h2>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Amt (NPR)</th>
+                  <th>Memo</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.filter(t => !t.memberId).map((t) => (
+                  <tr key={t._id} className="tx-row">
+                    <td>
+                      <span className={`status-badge ${t.type === 'income' ? 'status-completed' : 'status-ongoing'}`}>
+                        {t.type}
+                      </span>
+                    </td>
+                    <td className={t.type === 'income' ? 'text-[#10b981]' : 'text-[#ef4444]'}>
+                      {t.amount?.toLocaleString()}
+                    </td>
+                    <td className="text-gray-400 text-[13px]">{t.sourceOrVendor} - {t.description}</td>
+                    <td className="tx-date">{new Date(t.date).toLocaleDateString()}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>

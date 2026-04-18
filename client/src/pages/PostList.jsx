@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../api/axios";
 
 export default function PostList() {
   const [posts, setPosts] = useState([]);
@@ -8,7 +8,7 @@ export default function PostList() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:5500/api/public/posts");
+        const res = await API.get("/public/posts");
         setPosts(res.data);
       } catch (error) {
         console.error("Error fetching posts:", error);

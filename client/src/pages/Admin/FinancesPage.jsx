@@ -75,6 +75,21 @@ export default function FinancesPage() {
     } catch (err) { console.error("Delete failed", err); }
   };
 
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
+  const [transferData, setTransferData] = useState({ fromProjectId: "", toProjectId: "", amount: "", description: "" });
+
+  const handleTransferSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await API.post("/finances/transfer", transferData);
+      setIsTransferOpen(false);
+      setTransferData({ fromProjectId: "", toProjectId: "", amount: "", description: "" });
+      fetchData();
+    } catch (err) { console.error("Transfer failed", err); }
+    finally { setSaving(false); }
+  };
+
   const totalIncome = finances.filter(f => f.type === "income").reduce((s, f) => s + (f.amount || 0), 0);
   const totalExpense = finances.filter(f => f.type === "expense").reduce((s, f) => s + (f.amount || 0), 0);
 
@@ -91,7 +106,10 @@ export default function FinancesPage() {
 
       <div className="admin-page-header">
         <h2 className="section-title">Collections Hub</h2>
-        <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Entry</button>
+        <div className="flex gap-3">
+          <button className="admin-add-btn bg-blue-600 border-blue-600" onClick={() => setIsTransferOpen(true)}>⇄ Transfer</button>
+          <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Entry</button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-[30px]">
@@ -124,7 +142,12 @@ export default function FinancesPage() {
         <div className="flex flex-col gap-5">
           {projects.map(p => {
             const projectTX = finances.filter(f => f.projectId?._id === p._id);
-            if (projectTX.length === 0) return null;
+            if (projectTX.length === 0) return (
+               <div key={p._id} className="project-card cricket-card opacity-50">
+                  <h3 className="project-card__title">{p.title}</h3>
+                  <div className="text-[12px] text-gray-500">No transactions recorded.</div>
+               </div>
+            );
             return (
               <div key={p._id} className="project-card cricket-card">
                 <h3 className="project-card__title">{p.title}</h3>
@@ -134,8 +157,8 @@ export default function FinancesPage() {
                     <tbody>
                       {projectTX.map(tx => (
                         <tr key={tx._id} className="border-b border-[#111]">
-                          <td className="py-2 text-[12px]">{tx.sourceOrVendor}</td>
-                          <td className="text-right text-[#d97706]">NPR {tx.amount}</td>
+                          <td className="py-2 text-[12px] font-medium">{tx.memberId?.name || tx.sourceOrVendor}</td>
+                          <td className={`text-right text-[12px] ${tx.type==='income' ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>NPR {tx.amount}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -149,6 +172,7 @@ export default function FinancesPage() {
 
       <Modal isOpen={isOpen} onClose={closeModal} title="Record Transaction">
         <form onSubmit={handleSubmit}>
+          {/* ... existing form ... */}
           <div className="form-field">
             <label className="form-label">Collection Type</label>
             <select name="donorType" value={formData.donorType} onChange={handleChange} className="form-select">
@@ -168,15 +192,13 @@ export default function FinancesPage() {
             </div>
           )}
 
-          {formData.donorType === 'project' && (
-            <div className="form-field">
-              <label className="form-label">Target Project</label>
-              <select name="projectId" value={formData.projectId} onChange={handleChange} className="form-select" required>
-                <option value="">Choose project...</option>
-                {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
-              </select>
-            </div>
-          )}
+          <div className="form-field">
+            <label className="form-label">Project (Optional)</label>
+            <select name="projectId" value={formData.projectId} onChange={handleChange} className="form-select">
+               <option value="">No Project (General Fund)</option>
+               {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+            </select>
+          </div>
 
           <div className="form-field">
             <label className="form-label">Type</label>
@@ -201,6 +223,37 @@ export default function FinancesPage() {
           <div className="form-actions">
             <button type="button" className="form-btn-cancel" onClick={closeModal}>Cancel</button>
             <button type="submit" className="form-btn-save" disabled={saving}>{saving ? "Recording..." : "Save Record"}</button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isTransferOpen} onClose={() => setIsTransferOpen(false)} title="Balance Transfer">
+        <form onSubmit={handleTransferSubmit}>
+          <div className="form-field">
+            <label className="form-label">From Project</label>
+            <select value={transferData.fromProjectId} onChange={e => setTransferData({...transferData, fromProjectId: e.target.value})} className="form-select" required>
+              <option value="">Choose project...</option>
+              {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+            </select>
+          </div>
+          <div className="form-field">
+            <label className="form-label">To Project</label>
+            <select value={transferData.toProjectId} onChange={e => setTransferData({...transferData, toProjectId: e.target.value})} className="form-select" required>
+              <option value="">Choose project...</option>
+              {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+            </select>
+          </div>
+          <div className="form-field">
+            <label className="form-label">Amount (NPR)</label>
+            <input type="number" value={transferData.amount} onChange={e => setTransferData({...transferData, amount: e.target.value})} className="form-input" required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Note</label>
+            <input type="text" value={transferData.description} onChange={e => setTransferData({...transferData, description: e.target.value})} className="form-input" placeholder="e.g. Closing project balance" />
+          </div>
+          <div className="form-actions">
+            <button type="button" className="form-btn-cancel" onClick={() => setIsTransferOpen(false)}>Cancel</button>
+            <button type="submit" className="form-btn-save" disabled={saving}>{saving ? "Transferring..." : "Complete Transfer"}</button>
           </div>
         </form>
       </Modal>

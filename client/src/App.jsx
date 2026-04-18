@@ -8,7 +8,6 @@ import ProjectDetails from "./pages/ProjectDetails";
 import Transparency from "./pages/Transparency";
 import Members from "./pages/Members";
 import PostList from "./pages/PostList";
-import Booking from "./pages/Booking";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
@@ -16,7 +15,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ProjectsPage from "./pages/Admin/ProjectsPage"
 import FinancesPage from "./pages/Admin/FinancesPage";
 import AdminPostsPage from "./pages/Admin/PostsPage";
-import AdminBookingsPage from "./pages/Admin/BookingsPage";
 import MembersPage from "./pages/Admin/MembersPage";
 import Profile from "./pages/Profile";
 
@@ -24,9 +22,9 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="app-container">
+      <div className="flex flex-col min-h-screen bg-black">
         <Navbar />
-        <main className="app-main min-h-[80vh]">
+        <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -43,7 +41,6 @@ function App() {
             />
             <Route path="/members" element={<Members />} />
             <Route path="/posts" element={<PostList />} />
-            <Route path="/booking" element={<Booking />} />
             <Route
               path="/profile"
               element={
@@ -55,7 +52,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -81,14 +78,6 @@ function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <AdminPostsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/bookings"
-              element={
-                <ProtectedRoute adminOnly>
-                  <AdminBookingsPage />
                 </ProtectedRoute>
               }
             />

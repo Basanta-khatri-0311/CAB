@@ -1,67 +1,190 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
+import Modal from "../components/ui/Modal";
+import PostForm from "../components/Admin/PostForm";
+import { useAuth } from "../context/AuthContext";
+import { HiPencil, HiTrash } from "react-icons/hi2";
 
 export default function PostList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  
+  const { user } = useAuth();
+
+  const fetchPosts = async () => {
+    try {
+      const res = await API.get("/posts");
+      setPosts(res.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await API.get("/public/posts");
-        setPosts(res.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPosts();
   }, []);
 
+  const handleAdd = () => {
+    setEditingPost(null);
+    setIsAdminModalOpen(true);
+  };
+
+  const handleEdit = (post) => {
+    setEditingPost(post);
+    setIsAdminModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this post?")) return;
+    try {
+      await API.delete(`/posts/${id}`);
+      fetchPosts();
+    } catch (err) {
+      alert("Error deleting post.");
+    }
+  };
+
+  const handleAdminSubmit = async (formData) => {
+    try {
+      if (editingPost) {
+        await API.put(`/posts/${editingPost._id}`, formData);
+      } else {
+        await API.post("/posts", formData);
+      }
+      setIsAdminModalOpen(false);
+      fetchPosts();
+    } catch (err) {
+      alert("Operation failed.");
+    }
+  };
+
   if (loading) {
     return (
-      <div className="loader-screen">
-        <div className="loader-spinner"></div>
-        <div className="loader-text">Loading Announcements...</div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
+        <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Loading Posts</p>
       </div>
     );
   }
 
   return (
-    <div className="page-wrapper fade-up">
-      <header className="page-header mb-[60px] rounded-[20px]">
-        <div className="section-eyebrow">Announcements</div>
-        <h1 className="page-title">Club Feed</h1>
-        <p className="page-subtitle">
-          Updates, match reports, and records from the Cricket Association of Bhaluhi.
-        </p>
-      </header>
-
-      <div className="projects-grid grid-cols-1">
-        {posts.map((post) => (
-          <article key={post._id} className="project-card cursor-default">
-            {post.image && (
-              <img 
-                src={post.image} 
-                alt={post.title} 
-                className="w-full h-[300px] object-cover rounded-[12px] mb-5" 
-              />
-            )}
-            <div className="section-eyebrow mb-[5px]">
-              {new Date(post.createdAt).toLocaleDateString()} • By {post.author.name}
+    <div className="bg-black min-h-screen text-gray-200 pb-20">
+      {/* Header */}
+      <div className="py-16 px-6 bg-zinc-900/10 border-b border-white/5 mb-16">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
+          <div className="max-w-2xl">
+            <span className="section-eyebrow tracking-[0.2em]">Latest Updates</span>
+            <div className="flex items-center gap-6 mb-4">
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">Club News</h1>
+              {user?.role === 'admin' && (
+                <button 
+                  onClick={handleAdd}
+                  className="bg-brand hover:bg-brand-dark text-black text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl shadow-lg shadow-brand/20 active:scale-95 transition-all"
+                >
+                  + Add New Post
+                </button>
+              )}
             </div>
-            <h2 className="page-title text-[28px] text-left">{post.title}</h2>
-            <div className="project-card__desc text-[16px] text-[#e5e7eb] whitespace-pre-wrap">
-              {post.content}
-            </div>
-          </article>
-        ))}
+            <p className="text-gray-500 text-xs max-w-lg leading-relaxed">
+              Read the latest match reports and official club announcements.
+            </p>
+          </div>
+          <div className="pb-1">
+             <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">{posts.length} Total Posts</span>
+          </div>
+        </div>
       </div>
 
-      {posts.length === 0 && (
-        <div className="empty-state">No posts yet</div>
-      )}
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {posts.map((post) => (
+            <article key={post._id} className="group bg-zinc-900/40 border border-white/5 rounded-[3rem] overflow-hidden flex flex-col transition-all duration-500 hover:border-brand/30 hover:-translate-y-2 relative shadow-2xl">
+              
+              {/* Admin Context Menu */}
+              {user?.role === 'admin' && (
+                <div className="absolute top-6 right-6 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => handleEdit(post)}
+                    className="w-10 h-10 rounded-full bg-black border border-white/10 flex items-center justify-center text-brand hover:bg-brand hover:text-black transition-all shadow-xl"
+                    title="Edit Post"
+                  >
+                    <HiPencil size={18} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(post._id)}
+                    className="w-10 h-10 rounded-full bg-black border border-white/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-xl"
+                    title="Delete Post"
+                  >
+                    <HiTrash size={18} />
+                  </button>
+                </div>
+              )}
+
+              <div className="h-64 overflow-hidden relative">
+                {post.image ? (
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-110" />
+                ) : (
+                  <div className="w-full h-full bg-black flex items-center justify-center text-zinc-800 text-4xl font-black">
+                    CAB
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60"></div>
+                <div className="absolute bottom-6 left-8">
+                   <span className="px-3 py-1 rounded-full bg-brand text-black text-[9px] font-black uppercase tracking-widest shadow-xl">Club Update</span>
+                </div>
+              </div>
+
+              <div className="p-10 flex flex-col flex-grow">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </span>
+                  <div className="w-1 h-1 rounded-full bg-brand/40"></div>
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                    By {post.author?.name || "Member"}
+                  </span>
+                </div>
+
+                <h2 className="text-3xl font-black text-white tracking-tighter mb-6 leading-tight group-hover:text-brand transition-colors">
+                  {post.title}
+                </h2>
+                
+                <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-4 flex-grow mb-8">
+                  {post.content}
+                </p>
+
+                <div className="pt-8 border-t border-white/5 flex justify-between items-center group-hover:border-brand/20 transition-colors">
+                   <span className="text-[10px] font-black uppercase tracking-widest text-brand transition-all group-hover:translate-x-2 underline underline-offset-4">Read Full Post →</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {posts.length === 0 && (
+          <div className="py-40 text-center">
+             <p className="text-gray-700 font-bold tracking-[0.2em] uppercase text-xs">No news posts found</p>
+          </div>
+        )}
+      </div>
+
+      <Modal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        title={editingPost ? "Edit Post" : "Add New Post"}
+      >
+        <div className="p-6">
+          <PostForm
+            initialData={editingPost}
+            onSubmit={handleAdminSubmit}
+            onClose={() => setIsAdminModalOpen(false)}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

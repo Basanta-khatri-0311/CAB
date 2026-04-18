@@ -1,187 +1,184 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
-
-const defaultForm = {
-  name: "",
-  email: "",
-  password: "",
-  role: "member",
-  roleInClub: "Player",
-  phone: "",
-  bio: "",
-  photo: ""
-};
+import MemberForm from "../../components/Admin/MemberForm";
+import { HiPencil, HiTrash, HiCheck, HiXMark } from "react-icons/hi2";
 
 export default function MembersPage() {
-  const [users, setUsers] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState(defaultForm);
-  const [editingId, setEditingId] = useState(null);
+  const [editingMember, setEditingMember] = useState(null);
 
-  const fetchUsers = async () => {
+  const fetchMembers = async () => {
     try {
       const res = await API.get("/users");
-      setUsers(res.data);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+      setMembers(res.data || []);
+    } catch (err) {
+      setError("Failed to fetch members.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchUsers(); }, []);
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0];
-    const uploadData = new FormData();
-    uploadData.append("image", file);
-    setLoading(true);
-
+  const handleStatusChange = async (member, newStatus) => {
+    if (!window.confirm(`Set ${member.name}'s account to ${newStatus}?`)) return;
     try {
-      const { data } = await API.post("/upload", uploadData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      setFormData({ ...formData, photo: data });
-    } catch (error) { console.error(error); }
-    finally { setLoading(false); }
+      await API.put(`/users/${member._id}`, { status: newStatus });
+      fetchMembers();
+    } catch (err) {
+      alert("Status update failed.");
+    }
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const closeModal = () => { setIsOpen(false); setFormData(defaultForm); setEditingId(null); };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        await API.put(`/users/${editingId}`, formData);
-      } else {
-        await API.post("/users", formData);
-      }
-      closeModal();
-      fetchUsers();
-    } catch (err) { alert(err.response?.data?.message || "Operation failed"); }
-  };
-
-  const handleEdit = (u) => {
-    setEditingId(u._id);
-    setFormData({
-      name: u.name,
-      email: u.email,
-      role: u.role,
-      roleInClub: u.roleInClub || "Player",
-      phone: u.phone || "",
-      bio: u.bio || "",
-      photo: u.photo || "",
-      password: "" 
-    });
+  const handleEdit = (member) => {
+    setEditingMember(member);
     setIsOpen(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
-    await API.delete(`/users/${id}`);
-    fetchUsers();
+    if (!window.confirm("Remove this member permanently?")) return;
+    try {
+      await API.delete(`/users/${id}`);
+      fetchMembers();
+    } catch (err) {
+      alert("Error deleting member.");
+    }
   };
 
-  if (loading) return <div className="loader-screen"><div className="loader-spinner"></div></div>;
+  const handleSubmit = async (formData) => {
+    try {
+      if (editingMember) {
+        await API.put(`/users/${editingMember._id}`, formData);
+      } else {
+        await API.post("/users", formData);
+      }
+      setIsOpen(false);
+      fetchMembers();
+    } catch (err) {
+      alert("Failed to save changes.");
+    }
+  };
+
+  const toggleAdmin = async (member) => {
+    const newRole = member.role === "admin" ? "user" : "admin";
+    if (!window.confirm(`Change ${member.name}'s system role to ${newRole}?`)) return;
+    
+    try {
+      await API.put(`/users/${member._id}`, { role: newRole });
+      fetchMembers();
+    } catch (err) {
+      alert("Error updating role.");
+    }
+  };
 
   return (
-    <div className="page-wrapper fade-up">
-      <header className="admin-page-header">
-        <div>
-          <h1 className="page-title">User Management</h1>
-          <p className="project-description">Manage club members, staff, and administrative access.</p>
+    <div className="bg-black min-h-screen text-gray-200 pb-20">
+      <div className="py-16 px-6 bg-zinc-900/10 border-b border-white/5 mb-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
+          <div className="max-w-2xl">
+            <span className="section-eyebrow tracking-[0.2em]">Council Management</span>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4 decoration-brand underline underline-offset-8 decoration-4">Roster & Access</h1>
+            <p className="text-gray-500 text-xs max-w-lg leading-relaxed">
+              Verify new registrations, manage club roles, and audit system-wide permissions.
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => { setEditingMember(null); setIsOpen(true); }}
+            className="bg-brand hover:bg-brand-dark text-black font-black uppercase tracking-widest px-8 py-3 rounded-xl text-xs transition-all shadow-xl shadow-brand/20 active:scale-95"
+          >
+            + Register New Member
+          </button>
         </div>
-        <button className="admin-add-btn" onClick={() => setIsOpen(true)}>+ Add Member</button>
-      </header>
-
-      <div className="table-wrapper mt-[30px]">
-        <table>
-          <thead>
-            <tr>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Club Position</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(u => (
-              <tr key={u._id} className="tx-row">
-                <td>
-                  <div className="w-10 h-10 rounded-full bg-[#111] overflow-hidden border border-[#d97706]">
-                    {u.photo ? <img src={u.photo} alt={u.name} className="w-full h-full object-cover" /> : <div className="text-[14px] leading-10 text-center text-[#d97706]">{u.name.charAt(0)}</div>}
-                  </div>
-                </td>
-                <td className="font-semibold">{u.name}</td>
-                <td className="tx-desc">{u.email}</td>
-                <td>
-                  <span className={`status-badge ${u.role === 'admin' ? 'status-completed' : 'status-ongoing'} text-[9px]`}>
-                    {u.role}
-                  </span>
-                </td>
-                <td className="text-[#d97706] text-[12px] font-medium">{u.roleInClub}</td>
-                <td>
-                  <div className="flex gap-3">
-                    <button onClick={() => handleEdit(u)} className="text-[#d97706] bg-none border-none cursor-pointer">Edit</button>
-                    <button onClick={() => handleDelete(u._id)} className="text-[#ef4444] bg-none border-none cursor-pointer">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal} title={editingId ? "Edit Member" : "Add New Member"}>
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label className="form-label">Full Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-input" required />
+      <div className="max-w-7xl mx-auto px-6">
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-center mb-8">
+            {error}
           </div>
-          <div className="form-field">
-            <label className="form-label">Profile Photo</label>
-            <input type="file" className="form-input" onChange={uploadFileHandler} />
-            {formData.photo && <p className="text-[10px] text-[#10b981] mt-[5px]">Photo uploaded: {formData.photo}</p>}
+        )}
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-40">
+            <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Decrypting Roster...</p>
           </div>
-          <div className="form-field">
-            <label className="form-label">Email Address</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input" required />
+        ) : (
+          <div className="bg-zinc-900/50 border border-white/5 rounded-[3rem] overflow-hidden shadow-3xl backdrop-blur-sm">
+            <table className="w-full text-left font-sans">
+              <thead>
+                <tr className="bg-white/5 border-b border-white/5">
+                  <th className="px-10 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Identity</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Access Status</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Club Role</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] text-right">Draft Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {members.map((member) => (
+                  <tr key={member._id} className="hover:bg-white/[0.02] transition-colors group">
+                    <td className="px-10 py-8">
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-2xl bg-black border-2 border-white/5 overflow-hidden flex-shrink-0 shadow-2xl">
+                          {member.photo ? (
+                            <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-brand text-xl font-black">{member.name.charAt(0)}</div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-white font-black text-xl tracking-tight group-hover:text-brand transition-colors">{member.name}</p>
+                          <p className="text-[10px] text-gray-600 font-bold mt-1 uppercase tracking-widest">{member.email}</p>
+                        </div>
+                        {member.role === 'admin' && <span className="text-[8px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded uppercase font-black tracking-widest">Root Admin</span>}
+                      </div>
+                    </td>
+                    <td className="px-10 py-8">
+                       {member.status === 'pending' ? (
+                          <div className="flex gap-2">
+                             <button onClick={() => handleStatusChange(member, 'active')} className="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-black border border-emerald-500/30 font-black px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                                <HiCheck size={14} /> Approve
+                             </button>
+                             <button onClick={() => handleStatusChange(member, 'rejected')} className="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/30 font-black px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                                <HiXMark size={14} /> Reject
+                             </button>
+                          </div>
+                       ) : (
+                          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                             member.status === 'active' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'
+                          }`}>
+                             <span className={`w-1.5 h-1.5 rounded-full ${member.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                             {member.status}
+                          </span>
+                       )}
+                    </td>
+                    <td className="px-10 py-8">
+                       <p className="text-white font-bold text-xs tracking-tight">{(Array.isArray(member.roleInClub) ? member.roleInClub : [member.roleInClub || 'Player']).join(' • ')}</p>
+                    </td>
+                    <td className="px-10 py-8 text-right underline underline-offset-4 decoration-white/5">
+                      <div className="flex justify-end gap-4">
+                        <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xs hover:bg-brand hover:text-black transition-all shadow-xl" onClick={() => handleEdit(member)} title="Edit Configuration"><HiPencil size={18} /></button>
+                        <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xs hover:bg-red-500 transition-all shadow-xl" onClick={() => handleDelete(member._id)} title="Purge Record"><HiTrash size={18} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="form-field">
-            <label className="form-label">Password {editingId && "(Leave blank to keep current)"}</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} className="form-input" required={!editingId} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="form-field">
-              <label className="form-label">System Role</label>
-              <select name="role" value={formData.role} onChange={handleChange} className="form-select">
-                <option value="member">Member (Standard)</option>
-                <option value="admin">Admin (Full Access)</option>
-              </select>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Club Position</label>
-              <select name="roleInClub" value={formData.roleInClub} onChange={handleChange} className="form-select">
-                <option value="Player">Player</option>
-                <option value="Coach">Coach</option>
-                <option value="Staff">Staff</option>
-                <option value="Board Member">Board Member</option>
-              </select>
-            </div>
-          </div>
-          <div className="form-field">
-            <label className="form-label">Phone</label>
-            <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="form-input" />
-          </div>
-          <div className="form-actions">
-            <button type="button" className="form-btn-cancel" onClick={closeModal}>Cancel</button>
-            <button type="submit" className="form-btn-save">{editingId ? "Update Member" : "Create Account"}</button>
-          </div>
-        </form>
-      </Modal>
+        )}
+
+        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title={editingMember ? "Modify Member Access" : "Provision Member"} wide={true}>
+          <MemberForm initialData={editingMember} onSubmit={handleSubmit} onClose={() => setIsOpen(false)} />
+        </Modal>
+      </div>
     </div>
   );
 }

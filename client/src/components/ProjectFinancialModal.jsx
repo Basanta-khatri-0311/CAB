@@ -2,76 +2,203 @@ import { useState, useEffect } from "react";
 import API from "../api/axios";
 import Modal from "./ui/Modal";
 
+const defaultForm = {
+  type: "income",
+  donorType: "member",
+  memberId: "",
+  sourceOrVendor: "",
+  amount: "",
+  description: "",
+  date: new Date().toISOString().split("T")[0],
+};
+
 export default function ProjectFinancialModal({ isOpen, onClose, project, user }) {
   const [finances, setFinances] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingFinance, setEditingFinance] = useState(null);
+  const [formData, setFormData] = useState(defaultForm);
+  const [saving, setSaving] = useState(false);
+
+  const fetchData = async () => {
+    if (!project) return;
+    try {
+      const [fRes, mRes] = await Promise.all([
+        API.get(`/finances/${project._id}`),
+        API.get("/public/members")
+      ]);
+      setFinances(fRes.data);
+      setMembers(mRes.data);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
+  };
 
   useEffect(() => {
     if (isOpen && project && user) {
-      const fetchFinances = async () => {
-        try {
-          const res = await API.get(`/finances/${project._id}`);
-          setFinances(res.data);
-        } catch (err) { console.error(err); }
-        finally { setLoading(false); }
-      };
-      fetchFinances();
+      setLoading(true);
+      fetchData();
     }
   }, [isOpen, project, user]);
 
+  const handleAction = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = { ...formData, projectId: project._id };
+      if (formData.donorType === 'member') {
+        const m = members.find(m => m._id === formData.memberId);
+        payload.sourceOrVendor = m?.name || "Member";
+      }
+
+      if (editingFinance) {
+        await API.put(`/finances/${editingFinance._id}`, payload);
+      } else {
+        await API.post("/finances", payload);
+      }
+      
+      setFormData(defaultForm);
+      setShowAddForm(false);
+      setEditingFinance(null);
+      fetchData();
+    } catch (err) {
+      alert("Action failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startEdit = (f) => {
+    setEditingFinance(f);
+    setFormData({
+      type: f.type,
+      donorType: f.donorType || "member",
+      memberId: f.memberId?._id || f.memberId || "",
+      sourceOrVendor: f.sourceOrVendor || "",
+      amount: f.amount,
+      description: f.description || "",
+      date: new Date(f.date).toISOString().split("T")[0],
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this record?")) return;
+    try {
+      await API.delete(`/finances/${id}`);
+      fetchData();
+    } catch (err) { alert("Delete failed."); }
+  };
+
   if (!project) return null;
 
-  const totalIncome = finances.filter(f => f.type === 'income').reduce((sum, f) => sum + f.amount, 0);
-  const totalExpense = finances.filter(f => f.type === 'expense').reduce((sum, f) => sum + f.amount, 0);
+  const totalIncome = finances.filter(f => f.type === 'income').reduce((sum, f) => sum + (f.amount || 0), 0);
+  const totalExpense = finances.filter(f => f.type === 'expense').reduce((sum, f) => sum + (f.amount || 0), 0);
+  const balance = totalIncome - totalExpense;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`${project.title} - Financial Audit`}>
-       {!user ? (
-         <p className="text-center p-5 text-gray-500">Please login as a member to view detailed financial audits.</p>
-       ) : loading ? (
-         <div className="text-center p-5"><div className="loader-spinner"></div></div>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Financials: ${project.title}`}>
+       {loading ? (
+         <div className="p-20 text-center text-xs text-gray-500 font-bold uppercase tracking-widest animate-pulse">Loading...</div>
        ) : (
-         <div>
-            <div className="grid grid-cols-2 gap-2.5 mb-5">
-               <div className="stat-card stat-card--income p-[15px]">
-                  <p className="stat-card__label">Project Income</p>
-                  <p className="stat-card__value text-lg">NPR {totalIncome.toLocaleString()}</p>
+         <div className="max-h-[80vh] overflow-y-auto px-2 custom-scrollbar space-y-8">
+            
+            {/* Simple Stats Summary */}
+            <div className="grid grid-cols-3 gap-4 border-b border-white/5 pb-8">
+               <div className="text-center">
+                  <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">Income</p>
+                  <p className="text-emerald-500 font-bold">NPR {totalIncome.toLocaleString()}</p>
                </div>
-               <div className="stat-card stat-card--expense p-[15px]">
-                  <p className="stat-card__label">Project Expense</p>
-                  <p className="stat-card__value text-lg">NPR {totalExpense.toLocaleString()}</p>
+               <div className="text-center">
+                  <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">Expenses</p>
+                  <p className="text-red-500 font-bold">NPR {totalExpense.toLocaleString()}</p>
+               </div>
+               <div className="text-center">
+                  <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">Balance</p>
+                  <p className={`font-bold ${balance >= 0 ? 'text-brand' : 'text-red-900'}`}>NPR {balance.toLocaleString()}</p>
                </div>
             </div>
 
-            <div className="table-wrapper">
-               <table>
-                  <thead>
-                     <tr><th>Source/Vendor</th><th>Amount</th><th>Type</th></tr>
-                  </thead>
-                  <tbody>
-                     {finances.length === 0 ? (
-                       <tr><td colSpan="3" className="text-center p-[15px] text-gray-600">No transactions recorded yet.</td></tr>
-                     ) : (
-                       finances.map(f => (
-                         <tr key={f._id} className="tx-row">
-                            <td className="tx-desc">{f.sourceOrVendor}</td>
-                            <td className={f.type === 'income' ? 'tx-amount--income' : 'tx-amount--expense'}>
-                               NPR {f.amount.toLocaleString()}
-                            </td>
-                            <td>
-                               <span className={f.type === 'income' ? 'tx-type-badge--income' : 'tx-type-badge--expense'}>
-                                  {f.type}
-                               </span>
-                            </td>
-                         </tr>
-                       ))
-                     )}
-                  </tbody>
-               </table>
-            </div>
+            {/* Simple Add Form (If Admin) */}
+            {user?.role === 'admin' && (
+              <div className="bg-zinc-900/40 p-6 rounded-2xl border border-white/5">
+                 <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-xs font-bold text-white uppercase tracking-widest">{editingFinance ? 'Edit Record' : 'Add Record'}</h4>
+                    <button 
+                      onClick={() => { setShowAddForm(!showAddForm); setEditingFinance(null); setFormData(defaultForm); }}
+                      className="text-[10px] text-brand hover:underline font-bold uppercase tracking-widest"
+                    >
+                      {showAddForm ? '✕ Hide Form' : '+ Add New'}
+                    </button>
+                 </div>
 
-            <div className="mt-5 text-right text-gray-500 text-xs">
-               Remaining balance for this project: <span className="text-[#d97706] font-bold">NPR {(totalIncome - totalExpense).toLocaleString()}</span>
+                 {showAddForm && (
+                   <form onSubmit={handleAction} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                         <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none">
+                            <option value="income">Income (+)</option>
+                            <option value="expense">Expense (-)</option>
+                         </select>
+                         <input type="number" placeholder="Amount" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none" required />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                         <select value={formData.donorType} onChange={e => setFormData({...formData, donorType: e.target.value})} className="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none">
+                            <option value="member">Inside Member</option>
+                            <option value="outside">Outside Source</option>
+                            <option value="government">Government</option>
+                         </select>
+                         {formData.donorType === 'member' && formData.type === 'income' ? (
+                            <select value={formData.memberId} onChange={e => setFormData({...formData, memberId: e.target.value})} className="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none" required>
+                               <option value="">Choose Member...</option>
+                               {members.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
+                            </select>
+                         ) : (
+                            <input type="text" placeholder="Vendor / Name" value={formData.sourceOrVendor} onChange={e => setFormData({...formData, sourceOrVendor: e.target.value})} className="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none" required />
+                         )}
+                      </div>
+
+                      <button type="submit" disabled={saving} className="w-full bg-brand text-black py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-brand-dark transition-all">
+                         {saving ? 'Saving...' : (editingFinance ? 'Save Changes' : 'Record Entry')}
+                      </button>
+                   </form>
+                 )}
+              </div>
+            )}
+
+            {/* Simple Transaction List */}
+            <div className="space-y-2">
+               <h4 className="text-[10px] uppercase font-bold text-gray-600 mb-4 px-2">Transactions</h4>
+               {finances.length === 0 ? (
+                 <p className="text-center py-10 text-xs text-gray-700">No records found.</p>
+               ) : (
+                 <div className="divide-y divide-white/5 bg-zinc-900/20 rounded-xl overflow-hidden">
+                    {finances.map(f => (
+                      <div key={f._id} className="p-4 flex justify-between items-center group hover:bg-white/[0.02]">
+                         <div className="flex gap-4 items-center">
+                            <div className={`w-1 h-6 rounded-full ${f.type === 'income' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <div>
+                               <p className="text-sm font-bold text-gray-200">{f.memberId?.name || f.sourceOrVendor}</p>
+                               <p className="text-[9px] text-gray-600 uppercase font-medium">{new Date(f.date).toLocaleDateString()} • {f.donorType || 'Direct'}</p>
+                            </div>
+                         </div>
+                         <div className="text-right flex items-center gap-6">
+                            <div>
+                               <p className={`text-sm font-bold ${f.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
+                                  {f.type === 'income' ? '+' : '-'} {f.amount.toLocaleString()}
+                               </p>
+                            </div>
+                            {user?.role === 'admin' && (
+                               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button onClick={() => startEdit(f)} className="text-[10px] text-gray-500 hover:text-white uppercase font-bold">Edit</button>
+                                  <button onClick={() => handleDelete(f._id)} className="text-[10px] text-red-900 hover:text-red-500 uppercase font-bold">Del</button>
+                               </div>
+                            )}
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+               )}
             </div>
          </div>
        )}

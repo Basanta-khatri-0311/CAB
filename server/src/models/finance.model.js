@@ -37,6 +37,9 @@ const financeSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    billImage: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

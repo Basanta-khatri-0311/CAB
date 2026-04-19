@@ -2,22 +2,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchProjectById } from "../services/projects.api";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const COLORS = ["#10b981", "#ef4444"];
 
 export default function ProjectDetails() {
   const { id } = useParams();
+  const { user, loading: authLoading } = useAuth();
   const [projectData, setProjectData] = useState(null);
 
   useEffect(() => {
     fetchProjectById(id).then((data) => setProjectData(data)).catch(console.error);
   }, [id]);
 
-  if (!projectData)
+  // Wait for both project data and auth status check
+  if (!projectData || authLoading)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Loading Milestone</p>
+        <p className="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Syncing Ledger...</p>
       </div>
     );
 
@@ -27,6 +31,51 @@ export default function ProjectDetails() {
     { name: "Income", value: totalIncome || 0 },
     { name: "Expense", value: totalExpense || 0 },
   ];
+
+  // If still not logged in after check, show restricted view
+  if (!user) {
+    return (
+      <div className="bg-black min-h-screen text-gray-200">
+        {/* Header Section - Still visible to guests */}
+        <div className="bg-zinc-900/30 border-b border-white/5 py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+            <span className="section-eyebrow">Project Details</span>
+            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter mb-6">{project.title}</h1>
+            <p className="text-gray-400 text-lg leading-relaxed max-w-3xl mb-10">{project.description}</p>
+            
+            <div className="flex flex-wrap gap-4 items-center">
+              <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border ${
+                project.status === 'completed' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
+                project.status === 'ongoing' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' :
+                'bg-amber-500/10 border-amber-500/20 text-amber-500'
+              }`}>
+                {project.status}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Restricted Message instead of Finances */}
+        <div className="max-w-5xl mx-auto px-6 py-20 text-center">
+          <div className="mb-8 p-8 rounded-full bg-brand/5 border border-brand/10 w-fit mx-auto">
+              <span className="text-5xl">🔐</span>
+          </div>
+          <h2 className="text-3xl font-black text-white tracking-tighter mb-4">Member Access Required</h2>
+          <p className="max-w-md mx-auto text-gray-500 text-sm leading-relaxed mb-10 uppercase font-bold tracking-widest">
+            Detailed project ledgers, cash flows, and member contributions are exclusively available to <span className="text-brand">authenticated members</span>.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/login" className="px-10 py-4 bg-brand text-black font-black uppercase text-[10px] tracking-[0.2em] rounded-full hover:scale-105 transition-transform shadow-xl shadow-brand/20">
+                Sign In to View
+            </Link>
+            <Link to="/register" className="px-10 py-4 bg-white/5 border border-white/10 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-full hover:bg-white/10 transition-all">
+                Join Association
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black min-h-screen text-gray-200 pb-20">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API from "../../api/axios";
 
 const defaultForm = {
   title: "",
@@ -9,6 +10,7 @@ const defaultForm = {
 export default function PostForm({ initialData, onSubmit, onClose }) {
   const [form, setForm] = useState(defaultForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -24,6 +26,26 @@ export default function PostForm({ initialData, onSubmit, onClose }) {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploading(true);
+    try {
+      const { data } = await API.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setForm({ ...form, image: data });
+    } catch (err) {
+      alert("Flash upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -48,16 +70,31 @@ export default function PostForm({ initialData, onSubmit, onClose }) {
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Cover Image URL</label>
-        <input
-          type="text"
-          name="image"
-          placeholder="https://images.unsplash.com/..."
-          value={form.image}
-          onChange={handleChange}
-          className="w-full bg-black border border-white/10 rounded-xl px-6 py-4 text-gray-400 font-medium focus:border-brand transition-colors text-xs"
-        />
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Cover Image (URL or Local)</label>
+          <div className="flex gap-4">
+            <input
+              type="text"
+              name="image"
+              placeholder="https://images.unsplash.com/..."
+              value={form.image}
+              onChange={handleChange}
+              className="flex-grow bg-black border border-white/10 rounded-xl px-6 py-4 text-gray-400 font-medium focus:border-brand transition-colors text-xs"
+            />
+            <label className="shrink-0 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl px-6 py-4 cursor-pointer hover:bg-white/10 transition-all">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                {uploading ? '...' : 'Upload'}
+              </span>
+              <input type="file" className="hidden" onChange={handleFileChange} />
+            </label>
+          </div>
+        </div>
+        {form.image && (
+          <div className="h-32 rounded-xl overflow-hidden border border-white/5 bg-black">
+             <img src={form.image} className="w-full h-full object-cover opacity-50" alt="Preview" />
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">

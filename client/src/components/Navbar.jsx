@@ -34,6 +34,9 @@ export default function Navbar() {
               <>
                 <Link to="/transparency" className={linkClass("/transparency")}>Treasury</Link>
                 <Link to="/profile" className={linkClass("/profile")}>Profile</Link>
+                {user.role === "admin" && (
+                  <Link to="/admin" className={linkClass("/admin")}>Control Room</Link>
+                )}
               </>
             )}
 
@@ -87,6 +90,9 @@ export default function Navbar() {
               <>
                 <Link to="/transparency" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Treasury</Link>
                 <Link to="/profile" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Profile</Link>
+                {user.role === "admin" && (
+                  <Link to="/admin" className="block px-3 py-4 text-base font-black text-brand hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Control Room</Link>
+                )}
               </>
             )}
             {user ? (

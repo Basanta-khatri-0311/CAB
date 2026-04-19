@@ -213,9 +213,9 @@ export default function FinancesPage() {
             </div>
 
             <div className="flex gap-4 pt-6">
-               <button type="button" onClick={closeModal} className="flex-grow py-5 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-gray-500 transition-all">Abort</button>
+               <button type="button" onClick={closeModal} className="flex-grow py-5 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-gray-500 transition-all">Close</button>
                <button type="submit" disabled={saving} className="flex-grow py-5 bg-brand hover:bg-brand-dark rounded-xl text-[9px] font-black uppercase tracking-widest text-black shadow-xl shadow-brand/20 transition-all">
-                  {saving ? 'Syncing...' : 'Commit Transfer'}
+                  {saving ? 'Syncing...' : 'Add'}
                </button>
             </div>
          </form>

@@ -130,7 +130,7 @@ function MemberCard({ member }) {
       <div className="relative mb-10">
         <div className="w-40 h-40 rounded-full bg-black border-4 border-brand/10 group-hover:border-brand/60 transition-all duration-700 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
           {member.photo ? (
-            <img src={member.photo} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-110" />
+            <img src={member.photo} alt={member.name} className="w-full h-full object-cover  transition-all duration-700 transform group-hover:scale-110" />
           ) : (
             <div className="flex items-center justify-center h-full text-brand text-6xl font-black">
               {member.name.charAt(0)}
@@ -169,9 +169,7 @@ function MemberCard({ member }) {
             {new Date(member.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }).toUpperCase()}
           </p>
         </div>
-        <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest border border-white/10 px-4 py-1.5 rounded-full group-hover:text-white group-hover:border-brand/40 transition-all cursor-pointer">
-          Dossier →
-        </div>
+        
       </div>
     </div>
   );

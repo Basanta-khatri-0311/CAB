@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-export default function Modal({ isOpen, onClose, title, children, wide = false }) {
+export default function Modal({ isOpen, onClose, title, children, wide = false, noPadding = false }) {
   useEffect(() => {
     const handleEsc = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", handleEsc);
@@ -44,7 +44,7 @@ export default function Modal({ isOpen, onClose, title, children, wide = false }
         </div>
 
         {/* Content - Still scrollable internally ONLY if it exceeds max-height to prevent break on small screens */}
-        <div className="p-10 flex-grow overflow-y-auto custom-scrollbar">
+        <div className={`${noPadding ? '' : 'p-10'} flex-grow overflow-y-auto custom-scrollbar`}>
           {children}
         </div>
       </div>

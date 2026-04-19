@@ -104,7 +104,7 @@ export default function PostsPage() {
                 <div key={post._id} className="group bg-zinc-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl transition-all hover:border-brand/40 hover:-translate-y-1 backdrop-blur-sm">
                   <div className="h-48 overflow-hidden relative">
                     {post.image ? (
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                      <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700" />
                     ) : (
                        <div className="w-full h-full bg-black flex items-center justify-center text-brand text-4xl font-black">CAB</div>
                     )}

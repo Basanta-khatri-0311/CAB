@@ -167,7 +167,6 @@ export default function Projects() {
         isOpen={!!selectedProject} 
         onClose={() => setSelectedProject(null)} 
         project={selectedProject}
-        user={user}
       />
     </div>
   );

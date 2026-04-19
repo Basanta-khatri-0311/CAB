@@ -10,6 +10,7 @@ export default function PostList() {
   const [loading, setLoading] = useState(true);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null);
   
   const { user } = useAuth();
 
@@ -102,20 +103,24 @@ export default function PostList() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {posts.map((post) => (
-            <article key={post._id} className="group bg-zinc-900/40 border border-white/5 rounded-[3rem] overflow-hidden flex flex-col transition-all duration-500 hover:border-brand/30 hover:-translate-y-2 relative shadow-2xl">
+            <article 
+              key={post._id} 
+              className="group bg-zinc-900/40 border border-white/5 rounded-[3rem] overflow-hidden flex flex-col transition-all duration-500 hover:border-brand/30 hover:-translate-y-2 relative shadow-2xl cursor-pointer"
+              onClick={() => setSelectedPost(post)}
+            >
               
               {/* Admin Context Menu */}
               {user?.role === 'admin' && (
                 <div className="absolute top-6 right-6 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
-                    onClick={() => handleEdit(post)}
+                    onClick={(e) => { e.stopPropagation(); handleEdit(post); }}
                     className="w-10 h-10 rounded-full bg-black border border-white/10 flex items-center justify-center text-brand hover:bg-brand hover:text-black transition-all shadow-xl"
                     title="Edit Post"
                   >
                     <HiPencil size={18} />
                   </button>
                   <button 
-                    onClick={() => handleDelete(post._id)}
+                    onClick={(e) => { e.stopPropagation(); handleDelete(post._id); }}
                     className="w-10 h-10 rounded-full bg-black border border-white/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-xl"
                     title="Delete Post"
                   >
@@ -184,6 +189,58 @@ export default function PostList() {
             onClose={() => setIsAdminModalOpen(false)}
           />
         </div>
+      </Modal>
+
+      {/* Post Detail Modal */}
+      <Modal
+        isOpen={!!selectedPost}
+        onClose={() => setSelectedPost(null)}
+        title="Newsroom"
+        wide={true}
+        noPadding={true}
+      >
+        {selectedPost && (
+          <div className="flex flex-col">
+            <div className="h-64 sm:h-96 w-full relative shrink-0">
+              {selectedPost.image ? (
+                <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-black flex items-center justify-center text-zinc-900 text-6xl font-black">CAB</div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+            </div>
+
+            <div className="p-6 sm:p-10 -mt-10 relative z-10 bg-[#0a0a0a] backdrop-blur-3xl rounded-t-[3rem] border-t border-white/5">
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <span className="px-3 py-1 rounded-full bg-brand text-black text-[9px] font-black uppercase tracking-widest shadow-xl">Club Update</span>
+                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">{new Date(selectedPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                <div className="w-1 h-1 rounded-full bg-white/10"></div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">By {selectedPost.author?.name || "Official"}</span>
+              </div>
+
+              <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter mb-8 leading-[1.1]">
+                {selectedPost.title}
+              </h2>
+
+              <div className="w-20 h-1 bg-brand mb-10 rounded-full"></div>
+
+              <div className="text-gray-300 text-lg leading-relaxed space-y-6 font-medium">
+                {selectedPost.content.split('\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+
+              <div className="mt-16 pt-8 border-t border-white/5 flex justify-end">
+                <button 
+                  onClick={() => setSelectedPost(null)}
+                  className="px-8 py-3 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-brand hover:text-black transition-all"
+                >
+                  Close 
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

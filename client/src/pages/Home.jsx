@@ -196,7 +196,7 @@ export default function Home() {
               <div className="flex justify-between items-end border-t border-white/5 pt-8">
                 <div>
                   <p className="text-[10px] text-gray-700 uppercase tracking-[0.2em] mb-2 font-black">Allocation</p>
-                  <p className="text-brand font-black text-xl tracking-tighter">NPR {project.moneyUsed?.toLocaleString() || 0}</p>
+                  <p className="text-brand font-black text-xl tracking-tighter">NPR {project.estimatedBudget?.toLocaleString() || 0}</p>
                 </div>
                 <Link to="/projects" className="text-[9px] font-black text-white hover:underline underline-offset-4 uppercase tracking-widest">View More →</Link>
               </div>

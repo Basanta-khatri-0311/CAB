@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
 import Modal from "./ui/Modal";
+import { useAuth } from "../context/AuthContext";
 
 const defaultForm = {
   type: "income",
@@ -10,9 +11,11 @@ const defaultForm = {
   amount: "",
   description: "",
   date: new Date().toISOString().split("T")[0],
+  billImage: "",
 };
 
-export default function ProjectFinancialModal({ isOpen, onClose, project, user }) {
+export default function ProjectFinancialModal({ isOpen, onClose, project }) {
+  const { user, loading: authLoading } = useAuth();
   const [finances, setFinances] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +23,27 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
   const [editingFinance, setEditingFinance] = useState(null);
   const [formData, setFormData] = useState(defaultForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleBillUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const fd = new FormData();
+    fd.append("image", file);
+
+    setUploading(true);
+    try {
+      const { data } = await API.post("/upload", fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setFormData({ ...formData, billImage: data });
+    } catch (err) {
+      alert("Bill upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const fetchData = async () => {
     if (!project) return;
@@ -35,11 +59,15 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
   };
 
   useEffect(() => {
-    if (isOpen && project && user) {
-      setLoading(true);
-      fetchData();
+    if (isOpen && project && !authLoading) {
+      if (user) {
+        setLoading(true);
+        fetchData();
+      } else {
+        setLoading(false);
+      }
     }
-  }, [isOpen, project, user]);
+  }, [isOpen, project, user, authLoading]);
 
   const handleAction = async (e) => {
     e.preventDefault();
@@ -78,6 +106,7 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
       amount: f.amount,
       description: f.description || "",
       date: new Date(f.date).toISOString().split("T")[0],
+      billImage: f.billImage || "",
     });
     setShowAddForm(true);
   };
@@ -98,12 +127,20 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Financials: ${project.title}`}>
-       {loading ? (
-         <div className="p-20 text-center text-xs text-gray-500 font-bold uppercase tracking-widest animate-pulse">Loading...</div>
+       {loading || authLoading ? (
+         <div className="p-20 text-center text-xs text-gray-500 font-bold uppercase tracking-widest animate-pulse">Syncing Ledger...</div>
+       ) : !user ? (
+         <div className="p-20 text-center space-y-4">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-loose">
+              Detailed financial records are restricted to <br/>
+              <span className="text-brand">Verified Association Members</span>
+            </p>
+            <div className="pt-4">
+               <a href="/login" className="px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-white hover:bg-brand hover:text-black transition-all">Identify Yourself</a>
+            </div>
+         </div>
        ) : (
          <div className="max-h-[80vh] overflow-y-auto px-2 custom-scrollbar space-y-8">
-            
-            {/* Simple Stats Summary */}
             <div className="grid grid-cols-3 gap-4 border-b border-white/5 pb-8">
                <div className="text-center">
                   <p className="text-[9px] uppercase font-bold text-gray-500 mb-1">Income</p>
@@ -119,7 +156,6 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
                </div>
             </div>
 
-            {/* Simple Add Form (If Admin) */}
             {user?.role === 'admin' && (
               <div className="bg-zinc-900/40 p-6 rounded-2xl border border-white/5">
                  <div className="flex justify-between items-center mb-4">
@@ -158,7 +194,20 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
                          )}
                       </div>
 
-                      <button type="submit" disabled={saving} className="w-full bg-brand text-black py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-brand-dark transition-all">
+                      {formData.type === 'expense' && (
+                         <div className="space-y-2">
+                            <label className="text-[9px] font-bold text-gray-600 uppercase tracking-widest ml-2">Digital Receipt / Bill</label>
+                            <div className="flex gap-3">
+                               <input type="text" placeholder="Bill URL (or upload)" value={formData.billImage} onChange={e => setFormData({...formData, billImage: e.target.value})} className="flex-grow bg-black border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white outline-none" />
+                               <label className="shrink-0 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg px-4 py-2 cursor-pointer hover:bg-white/10 transition-all">
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{uploading ? '...' : 'Upload'}</span>
+                                  <input type="file" className="hidden" onChange={handleBillUpload} />
+                               </label>
+                            </div>
+                         </div>
+                      )}
+
+                      <button type="submit" disabled={saving || uploading} className="w-full bg-brand text-black py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-brand-dark transition-all disabled:opacity-50">
                          {saving ? 'Saving...' : (editingFinance ? 'Save Changes' : 'Record Entry')}
                       </button>
                    </form>
@@ -166,7 +215,6 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
               </div>
             )}
 
-            {/* Simple Transaction List */}
             <div className="space-y-2">
                <h4 className="text-[10px] uppercase font-bold text-gray-600 mb-4 px-2">Transactions</h4>
                {finances.length === 0 ? (
@@ -183,6 +231,11 @@ export default function ProjectFinancialModal({ isOpen, onClose, project, user }
                             </div>
                          </div>
                          <div className="text-right flex items-center gap-6">
+                            {f.billImage && (
+                               <a href={f.billImage} target="_blank" rel="noreferrer" title="View Bill" className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group/bill hover:bg-brand/10 hover:border-brand/20 transition-all">
+                                  <span className="text-xs group-hover/bill:scale-110 transition-transform">📄</span>
+                               </a>
+                            )}
                             <div>
                                <p className={`text-sm font-bold ${f.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
                                   {f.type === 'income' ? '+' : '-'} {f.amount.toLocaleString()}

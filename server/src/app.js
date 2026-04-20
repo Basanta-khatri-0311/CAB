@@ -5,7 +5,6 @@ const financeRoutes = require("./routes/finance.routes");
 const authRoutes = require('./routes/auth.routes');
 const publicRoutes = require('./routes/public.routes');
 const postRoutes = require('./routes/post.routes');
-const bookingRoutes = require('./routes/booking.routes');
 const userRoutes = require('./routes/user.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const path = require('path');
@@ -31,7 +30,6 @@ app.use('/api/finances', financeRoutes)
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 // Test Route

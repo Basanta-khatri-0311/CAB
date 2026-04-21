@@ -90,7 +90,7 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
       setEditingFinance(null);
       fetchData();
     } catch (err) {
-      alert("Action failed.");
+      alert(err.response?.data?.message || "Action failed.");
     } finally {
       setSaving(false);
     }

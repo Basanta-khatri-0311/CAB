@@ -1,5 +1,8 @@
 const express = require('express')
 const cors = require('cors')
+const rateLimit = require('express-rate-limit')
+const mongoSanitize = require('express-mongo-sanitize')
+const hpp = require('hpp')
 const projectRoutes = require("./routes/project.routes");
 const financeRoutes = require("./routes/finance.routes");
 const authRoutes = require('./routes/auth.routes');
@@ -11,6 +14,32 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 const app = express()
+
+// --- SYSTEM DESIGN & SECURITY MIDDLEWARE ---
+
+// Data Sanitization against NoSQL Injection
+app.use(mongoSanitize());
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
+
+// General Rate Limiter (Prevent DDoS/Scraping)
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: "Too many requests from this IP, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Stricter Rate Limiter for Auth (Anti Brute-Force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15, // 15 attempts per 15 minutes
+  message: { message: "Too many login/registration attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Security & Optimization
 app.use(helmet({
@@ -39,17 +68,29 @@ app.use(cors({
   },
   credentials: true,
 }))
+
+// Apply general rate limit to all request except auth
+app.use("/api", generalLimiter);
+
+// Specific stricter limit for Auth
+app.use("/api/auth", authLimiter, authRoutes);
+
 app.use(express.json()) //for allowing the json type
 app.use('/api/projects', projectRoutes)
 app.use('/api/finances', financeRoutes)
-app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
+
+// Health Check Endpoint (System Design Practice)
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "healthy", timestamp: new Date().toISOString() });
+});
+
 // Test Route
 app.get("/", (req, res) => {
-  res.send("COB Backend Running");
+  res.send("CAB Backend Running");
 });
 
 // Global Error Handler

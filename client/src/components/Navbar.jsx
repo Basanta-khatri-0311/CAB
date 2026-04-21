@@ -79,27 +79,32 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {menuOpen && (
-        <div className="md:hidden bg-black border-b border-border animate-fade-up">
-          <div className="px-4 pt-2 pb-6 space-y-1">
-            <Link to="/" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Arena</Link>
-            <Link to="/projects" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Milestones</Link>
-            <Link to="/posts" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Newsroom</Link>
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-black/95 backdrop-blur-xl border-b border-white/10 z-[100] animate-fade-in-down shadow-2xl">
+          <div className="px-6 py-8 space-y-4">
+            <Link to="/" className="block text-lg font-black text-gray-300 hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Arena</Link>
+            <Link to="/projects" className="block text-lg font-black text-gray-300 hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Milestones</Link>
+            <Link to="/posts" className="block text-lg font-black text-gray-300 hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Newsroom</Link>
             {user && (
               <>
-                <Link to="/transparency" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Treasury</Link>
-                <Link to="/profile" className="block px-3 py-4 text-base font-black text-gray-300 hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Profile</Link>
+                <Link to="/transparency" className="block text-lg font-black text-gray-300 hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Treasury</Link>
+                <Link to="/profile" className="block text-lg font-black text-gray-300 hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Profile</Link>
                 {user.role === "admin" && (
-                  <Link to="/admin" className="block px-3 py-4 text-base font-black text-brand hover:text-white uppercase" onClick={() => setMenuOpen(false)}>Control Room</Link>
+                  <Link to="/admin" className="block text-lg font-black text-brand hover:text-white uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Control Room</Link>
                 )}
               </>
             )}
-            {user ? (
-              <button onClick={() => { logout(); setMenuOpen(false); }} className="w-full text-left px-3 py-4 text-base font-black text-red-500 uppercase" aria-label="Sign Out">Sign Out</button>
-            ) : (
-              <Link to="/login" className="block px-3 py-4 text-base font-black text-brand uppercase" onClick={() => setMenuOpen(false)}>Sign In</Link>
-            )}
+            <div className="pt-6 border-t border-white/5">
+              {user ? (
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="w-full text-left text-lg font-black text-red-500 uppercase tracking-tighter" aria-label="Sign Out">Sign Out</button>
+              ) : (
+                <div className="space-y-4">
+                   <Link to="/login" className="block text-lg font-black text-brand uppercase tracking-tighter" onClick={() => setMenuOpen(false)}>Log In</Link>
+                   <Link to="/register" className="block bg-brand text-black text-center py-4 rounded-xl text-xs font-black uppercase tracking-widest" onClick={() => setMenuOpen(false)}>Join Association</Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

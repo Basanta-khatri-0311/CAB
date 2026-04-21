@@ -85,7 +85,7 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-brand hover:bg-brand-dark text-black font-black uppercase tracking-widest py-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-brand/20 disabled:opacity-50 mt-2 active:scale-95 text-xs"
           >
-            {loading ? "Decrypting..." : "Access Arena"}
+            {loading ? "Decrypting..." : "Log In"}
           </button>
         </div>
 

@@ -220,7 +220,7 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
                                <input type="text" placeholder="Bill URL (or upload)" value={formData.billImage} onChange={e => setFormData({...formData, billImage: e.target.value})} className="flex-grow bg-black border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white outline-none" />
                                <label className="shrink-0 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg px-4 py-2 cursor-pointer hover:bg-white/10 transition-all">
                                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{uploading ? '...' : 'Upload'}</span>
-                                  <input type="file" className="hidden" onChange={handleBillUpload} />
+                                  <input type="file" className="hidden" accept="image/*,.pdf" onChange={handleBillUpload} />
                                </label>
                             </div>
                          </div>

@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    // Note: Cookie is set by backend, we just save profile info
+    if (userData.token) {
+      localStorage.setItem("token", userData.token);
+    }
     setUser(userData);
   };
 
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
+      localStorage.removeItem("token");
       setUser(null);
       window.location.href = "/";
     }

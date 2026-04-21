@@ -13,9 +13,13 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    console.warn("ProtectedRoute: No session found");
+    return <Navigate to="/login" replace />;
+  }
 
   if (adminOnly && user.role !== 'admin') {
+    console.warn(`ProtectedRoute: Access denied for role: ${user.role}`);
     return <Navigate to="/" replace />;
   }
 

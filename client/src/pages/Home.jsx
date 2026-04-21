@@ -69,7 +69,7 @@ export default function Home() {
           src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=2070" 
           alt="Cricket Stadium" 
           className="absolute inset-0 w-full h-full object-cover scale-105"
-          fetchpriority="high"
+          fetchPriority="high"
         />
         
         <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">

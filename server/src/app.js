@@ -12,62 +12,53 @@ const userRoutes = require('./routes/user.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const helmet = require('helmet');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 
 const app = express()
 
-// --- SYSTEM DESIGN & SECURITY MIDDLEWARE ---
-
-// Data Sanitization against NoSQL Injection
-app.use(mongoSanitize());
-
-// Prevent HTTP Parameter Pollution
-app.use(hpp());
-
-// General Rate Limiter (Prevent DDoS/Scraping)
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: { message: "Too many requests from this IP, please try again after 15 minutes" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Stricter Rate Limiter for Auth (Anti Brute-Force)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 15, // 15 attempts per 15 minutes
-  message: { message: "Too many login/registration attempts, please try again later" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Security & Optimization
-app.use(helmet({
-  crossOriginResourcePolicy: false, // Allow local images if needed
-}));
-app.use(compression());
-
-// CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim().replace(/\/$/, ""))
-  : ["http://localhost:5173"];
-
+// 1. Basic Middlewares (Parse data first)
+app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-
-    // Clean the incoming origin to ensure consistent matching
     const cleanOrigin = origin.replace(/\/$/, "");
-
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim().replace(/\/$/, ""))
+      : ["http://localhost:5173"];
+    
     if (allowedOrigins.indexOf(cleanOrigin) === -1) {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-      return callback(new Error(msg), false);
+      return callback(new Error(`CORS policy blocked access from: ${origin}`), false);
     }
     return callback(null, true);
   },
   credentials: true,
-}))
+}));
+
+// 2. Security Sanitizers (Must come AFTER body parsing)
+// app.use(mongoSanitize());
+app.use(hpp());
+
+// 3. Security & Optimization Headers
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(compression());
+
+// 4. Rate Limiters
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { message: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: { message: "Too many login/registration attempts" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Apply general rate limit to all request except auth
 app.use("/api", generalLimiter);
@@ -75,7 +66,6 @@ app.use("/api", generalLimiter);
 // Specific stricter limit for Auth
 app.use("/api/auth", authLimiter, authRoutes);
 
-app.use(express.json()) //for allowing the json type
 app.use('/api/projects', projectRoutes)
 app.use('/api/finances', financeRoutes)
 app.use("/api/public", publicRoutes);

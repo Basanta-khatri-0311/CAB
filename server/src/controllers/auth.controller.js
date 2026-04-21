@@ -49,12 +49,22 @@ const loginUser = async (req, res) => {
         });
       }
 
+      const token = generateToken(user._id, user.role);
+      
+      // Set HttpOnly Cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure in production
+        sameSite: 'strict', // Prevent CSRF
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
+
       res.json({
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id, user.role),
+        status: user.status
       });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
@@ -64,4 +74,23 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser }
+// Logout
+const logoutUser = (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0)
+  });
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+// Get Me (Profile Check)
+const getMe = async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, getMe }

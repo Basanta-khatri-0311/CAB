@@ -4,7 +4,7 @@ const User = require('../models/user.model.js');
 const Post = require('../models/post.model.js');
 
 const attachFullUrl = (item, field) => {
-  if (item[field] && !item[field].startsWith("http")) {
+  if (item && item[field] && typeof item[field] === 'string' && !item[field].startsWith("http")) {
     const baseUrl = process.env.BASE_URL || "http://localhost:5500";
     item[field] = `${baseUrl}${item[field].startsWith("/") ? "" : "/"}${item[field]}`;
   }
@@ -13,6 +13,7 @@ const attachFullUrl = (item, field) => {
 
 const getHomeData = async (req, res) => {
   try {
+   
     // 1. Stats
     const incomeData = await Finance.aggregate([
       { $match: { type: "income" } },
@@ -31,6 +32,7 @@ const getHomeData = async (req, res) => {
       balance: totalIncome - totalExpense
     };
 
+    
     // 2. Members
     const membersRaw = await User.find({ status: "active" })
       .select("name photo roleInClub bio phone createdAt")
@@ -38,6 +40,7 @@ const getHomeData = async (req, res) => {
       .lean();
     const members = membersRaw.map(m => attachFullUrl(m, 'photo'));
 
+    
     // 3. Posts
     const postsRaw = await Post.find()
       .populate("author", "name")
@@ -46,6 +49,7 @@ const getHomeData = async (req, res) => {
       .lean();
     const posts = postsRaw.map(p => attachFullUrl(p, 'image'));
 
+    
     // 4. All Projects with Money Used
     const allProjectsRaw = await Project.find().sort({ createdAt: -1 }).lean();
     
@@ -65,6 +69,7 @@ const getHomeData = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Home Data Fetch Error:", error);
     res.status(500).json({ message: error.message });
   }
 };

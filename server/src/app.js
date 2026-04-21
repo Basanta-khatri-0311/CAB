@@ -46,6 +46,18 @@ app.use(cors({
 }));
 
 // 2. Security Sanitizers (Must come AFTER body parsing)
+// Express 5 workaround for mongoSanitize (req.query is a getter by default)
+app.use((req, res, next) => {
+  const query = req.query;
+  Object.defineProperty(req, 'query', {
+    value: query,
+    writable: true,
+    enumerable: true,
+    configurable: true
+  });
+  next();
+});
+
 app.use(mongoSanitize());
 app.use(hpp());
 

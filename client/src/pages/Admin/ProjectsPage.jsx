@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
 import ProjectForm from "../../components/Admin/ProjectForm";
@@ -79,6 +80,9 @@ export default function ProjectsPage() {
       <div className="py-16 px-6 bg-zinc-900/10 border-b border-white/5 mb-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
           <div className="max-w-2xl">
+            <Link to="/admin" className="text-[10px] font-black text-gray-600 hover:text-brand uppercase tracking-widest mb-6 inline-flex items-center gap-2 group transition-colors">
+              <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Dashboard
+            </Link>
             <span className="section-eyebrow tracking-[0.3em]">Command Center</span>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4 decoration-brand underline underline-offset-8 decoration-4">Manage Projects</h1>
             <p className="text-gray-500 text-xs max-w-lg leading-relaxed">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/ui/Modal";
@@ -84,6 +85,9 @@ export default function FinancesPage() {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand/5 blur-[120px] rounded-full" />
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
           <div>
+            <Link to="/admin" className="text-[10px] font-black text-gray-600 hover:text-brand uppercase tracking-widest mb-6 inline-flex items-center gap-2 group transition-colors">
+              <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Dashboard
+            </Link>
             <span className="section-eyebrow tracking-[0.3em]">Treasury & Project Funding</span>
             <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase mb-4 decoration-brand underline underline-offset-8">Money Records</h1>
             <p className="text-gray-500 text-sm max-w-lg mt-8 leading-relaxed">

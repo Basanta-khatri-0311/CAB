@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import API from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -13,7 +14,6 @@ export const AuthProvider = ({ children }) => {
         const { data } = await API.get("/auth/me");
         setUser(data);
       } catch (err) {
-        
         setUser(null);
       } finally {
         setLoading(false);

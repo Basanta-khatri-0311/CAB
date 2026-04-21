@@ -53,7 +53,7 @@ export default function Members() {
       <div className="max-w-7xl mx-auto px-6 pt-32 text-center">
         <header className="mb-24">
           <span className="section-eyebrow tracking-[0.3em]">The Association</span>
-          <h1 className="text-6xl md:text-7xl font-black text-white tracking-tighter mb-8 uppercase">Club Members</h1>
+          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter mb-8 uppercase">Club Members</h1>
           <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed font-medium">
             Leadership and athletes united. View our committee board and current playing squad.
           </p>
@@ -63,7 +63,7 @@ export default function Members() {
         {committee.length > 0 && (
           <div className="mb-40">
             <div className="text-left mb-16 border-l-4 border-brand pl-8">
-               <h2 className="text-4xl font-black text-white uppercase tracking-tighter">The Committee</h2>
+               <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">The Committee</h2>
                <p className="text-gray-500 text-sm mt-2 font-medium">Board members and strategic leadership of the association.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -76,7 +76,7 @@ export default function Members() {
         {squad.length > 0 && (
           <div className="mb-40">
             <div className="text-left mb-16 border-l-4 border-purple-500 pl-8">
-               <h2 className="text-4xl font-black text-white uppercase tracking-tighter">The Squad</h2>
+               <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">The Squad</h2>
                <p className="text-gray-500 text-sm mt-2 font-medium">Our cricketers bringing prestige to Bhaluhi on the field.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -94,7 +94,7 @@ export default function Members() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {others.map((member) => (
-                <div key={member._id} className="bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-8 text-center hover:border-brand/40 transition-all shadow-xl group">
+                <div key={member._id} className="bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-6 md:p-8 text-center hover:border-brand/40 transition-all shadow-xl group">
                    <div className="flex flex-wrap gap-1 justify-center mb-4">
                       {(Array.isArray(member.roleInClub) ? member.roleInClub : [member.roleInClub]).map(r => (
                         <span key={r} className="text-brand text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border border-brand/20 rounded-full bg-brand/5">
@@ -124,13 +124,13 @@ function MemberCard({ member }) {
   const roles = Array.isArray(member.roleInClub) ? member.roleInClub : [member.roleInClub];
 
   return (
-    <div className="group bg-zinc-900/40 border border-white/5 rounded-[4rem] p-12 flex flex-col items-center relative overflow-hidden transition-all duration-700 hover:border-brand/40 hover:-translate-y-3 shadow-2xl">
+    <div className="group bg-zinc-900/40 border border-white/5 rounded-[3rem] md:rounded-[4rem] p-6 md:p-12 flex flex-col items-center relative overflow-hidden transition-all duration-700 hover:border-brand/40 hover:-translate-y-3 shadow-2xl">
       <div className="absolute top-0 left-0 w-32 h-32 bg-brand/5 blur-3xl rounded-full" />
       
       <div className="relative mb-10">
         <div className="w-40 h-40 rounded-full bg-black border-4 border-brand/10 group-hover:border-brand/60 transition-all duration-700 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
           {member.photo ? (
-            <img src={member.photo} alt={member.name} className="w-full h-full object-cover  transition-all duration-700 transform group-hover:scale-110" />
+            <img loading="lazy" src={member.photo} alt={member.name} className="w-full h-full object-cover  transition-all duration-700 transform group-hover:scale-110" />
           ) : (
             <div className="flex items-center justify-center h-full text-brand text-6xl font-black">
               {member.name.charAt(0)}

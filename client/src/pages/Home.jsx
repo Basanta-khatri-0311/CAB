@@ -74,7 +74,7 @@ export default function Home() {
           <span className="inline-block px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 text-brand text-[10px] font-bold tracking-[0.2em] uppercase mb-6">
             Official Bhaluhi Cricket Portal
           </span>
-          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 leading-none uppercase">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 leading-tight md:leading-none uppercase">
             Cricket Association of<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-yellow-500">Bhaluhi</span>
           </h1>
@@ -119,9 +119,9 @@ export default function Home() {
             { label: "Total Expenses", value: stats.totalExpense, color: "text-red-500", bg: "bg-red-500/5", border: "border-red-500/20" },
             { label: "Current Balance", value: stats.balance, color: "text-brand", bg: "bg-brand/5", border: "border-brand/20" },
           ].map((stat, i) => (
-            <div key={i} className={`p-8 rounded-[2.5rem] border ${stat.bg} ${stat.border} backdrop-blur-sm group hover:border-white/10 transition-all shadow-2xl`}>
+            <div key={i} className={`p-6 md:p-8 rounded-[2.5rem] border ${stat.bg} ${stat.border} backdrop-blur-sm group hover:border-white/10 transition-all shadow-2xl`}>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2">Official Ledger: {stat.label}</p>
-              <p className={`text-5xl font-black tracking-tighter ${stat.color}`}>
+              <p className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter ${stat.color}`}>
                 NPR {stat.value.toLocaleString()}
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {projects.slice(0, 3).map((project) => (
-            <div key={project._id} className="p-10 rounded-[3rem] bg-zinc-900/50 border border-white/5 hover:border-brand/30 transition-all shadow-xl flex flex-col justify-between group">
+            <div key={project._id} className="p-6 md:p-10 rounded-[3rem] bg-zinc-900/50 border border-white/5 hover:border-brand/30 transition-all shadow-xl flex flex-col justify-between group">
               <div>
                 <div className="flex justify-between items-start mb-6">
                   <h3 className="text-2xl font-black text-white leading-tight pr-4 tracking-tighter group-hover:text-brand transition-colors">{project.title}</h3>
@@ -215,10 +215,10 @@ export default function Home() {
           <div className="space-y-8">
             {posts.map((post) => (
               <Link to="/posts" key={post._id} className="block group">
-                <article className="flex flex-col md:flex-row gap-8 items-center bg-black/40 p-8 rounded-[3.5rem] border border-white/5 hover:border-brand/30 transition-all shadow-2xl">
+                <article className="flex flex-col md:flex-row gap-8 items-center bg-black/40 p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-white/5 hover:border-brand/30 transition-all shadow-2xl">
                   {post.image && (
                     <div className="w-full md:w-64 h-48 rounded-[2rem] overflow-hidden flex-shrink-0 relative">
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover grayscale-0" />
+                      <img src={post.image} alt={post.title} className="w-full h-full object-cover grayscale-0" loading="lazy" />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all" />
                     </div>
                   )}
@@ -253,7 +253,7 @@ function MemberSmallCard({ member }) {
     <div className="group relative bg-[#080808] rounded-[3rem] overflow-hidden border border-white/5 hover:border-brand/40 transition-all shadow-xl">
       <div className="aspect-[4/5] overflow-hidden">
         {member.photo ? (
-          <img src={member.photo} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <img src={member.photo} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
         ) : (
           <div className="flex items-center justify-center h-full text-brand text-7xl font-black bg-black">
             {member.name.charAt(0)}

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
 import PostForm from "../../components/Admin/PostForm";
+import { useToast } from "../../context/ToastContext";
+import { useConfirm } from "../../context/ConfirmContext";
 
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
@@ -9,6 +11,8 @@ export default function PostsPage() {
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const fetchPosts = async () => {
     try {
@@ -36,13 +40,19 @@ export default function PostsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this post? This cannot be undone.")) return;
-    try {
-      await API.delete(`/posts/${id}`);
-      fetchPosts();
-    } catch (err) {
-      alert("Error deleting post.");
-    }
+    confirm({
+      title: "Delete Post",
+      message: "Are you sure you want to delete this post? This cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/posts/${id}`);
+          showToast("Post deleted", "success");
+          fetchPosts();
+        } catch (err) {
+          showToast("Error deleting post.", "error");
+        }
+      }
+    });
   };
 
   const handleSubmit = async (formData) => {
@@ -53,9 +63,10 @@ export default function PostsPage() {
         await API.post("/posts", formData);
       }
       setIsOpen(false);
+      showToast(editingPost ? "Post updated" : "Post draft saved", "success");
       fetchPosts();
     } catch (err) {
-      alert("Error saving post.");
+      showToast("Error saving post.", "error");
     }
   };
 
@@ -104,7 +115,7 @@ export default function PostsPage() {
                 <div key={post._id} className="group bg-zinc-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl transition-all hover:border-brand/40 hover:-translate-y-1 backdrop-blur-sm">
                   <div className="h-48 overflow-hidden relative">
                     {post.image ? (
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700" />
+                      <img loading="lazy" src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700" />
                     ) : (
                        <div className="w-full h-full bg-black flex items-center justify-center text-brand text-4xl font-black">CAB</div>
                     )}

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import API from "../api/axios";
 import Modal from "./ui/Modal";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useConfirm } from "../context/ConfirmContext";
 
 const defaultForm = {
   type: "income",
@@ -15,6 +17,8 @@ const defaultForm = {
 };
 
 export default function ProjectFinancialModal({ isOpen, onClose, project }) {
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const { user, loading: authLoading } = useAuth();
   const [finances, setFinances] = useState([]);
   const [members, setMembers] = useState([]);
@@ -39,7 +43,7 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
       });
       setFormData({ ...formData, billImage: data });
     } catch (err) {
-      alert("Bill upload failed");
+      showToast("Bill upload failed", "error");
     } finally {
       setUploading(false);
     }
@@ -74,6 +78,12 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
     setSaving(true);
     try {
       const payload = { ...formData, projectId: project._id };
+      
+      // Clean up memberId if it's an empty string to avoid Mongoose CastError
+      if (!payload.memberId || payload.donorType !== 'member') {
+        delete payload.memberId;
+      }
+
       if (formData.donorType === 'member') {
         const m = members.find(m => m._id === formData.memberId);
         payload.sourceOrVendor = m?.name || "Member";
@@ -85,12 +95,13 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
         await API.post("/finances", payload);
       }
       
+      showToast(editingFinance ? "Record updated" : "Entry recorded", "success");
       setFormData(defaultForm);
       setShowAddForm(false);
       setEditingFinance(null);
       fetchData();
     } catch (err) {
-      alert(err.response?.data?.message || "Action failed.");
+      showToast(err.response?.data?.message || "Action failed.", "error");
     } finally {
       setSaving(false);
     }
@@ -112,11 +123,19 @@ export default function ProjectFinancialModal({ isOpen, onClose, project }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this record?")) return;
-    try {
-      await API.delete(`/finances/${id}`);
-      fetchData();
-    } catch (err) { alert("Delete failed."); }
+    confirm({
+      title: "Delete Record",
+      message: "Are you sure you want to remove this financial record? This cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/finances/${id}`);
+          showToast("Record removed", "success");
+          fetchData();
+        } catch (err) { 
+          showToast("Delete failed.", "error"); 
+        }
+      }
+    });
   };
 
   if (!project) return null;

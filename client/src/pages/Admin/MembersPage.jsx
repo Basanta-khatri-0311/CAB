@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
 import MemberForm from "../../components/Admin/MemberForm";
+import { useToast } from "../../context/ToastContext";
+import { useConfirm } from "../../context/ConfirmContext";
 import { HiPencil, HiTrash, HiCheck, HiXMark } from "react-icons/hi2";
 
 export default function MembersPage() {
@@ -10,6 +12,8 @@ export default function MembersPage() {
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const fetchMembers = async () => {
     try {
@@ -27,14 +31,21 @@ export default function MembersPage() {
   }, []);
 
   const handleStatusChange = async (member, newStatus) => {
-    if (!window.confirm(`Set ${member.name}'s account to ${newStatus}?`)) return;
-    try {
-      await API.put(`/users/${member._id}`, { status: newStatus });
-      fetchMembers();
-    } catch (err) {
-      alert("Status update failed.");
-    }
+    confirm({
+      title: "Update Member Status",
+      message: `Are you sure you want to set ${member.name}'s account to ${newStatus}?`,
+      onConfirm: async () => {
+        try {
+          await API.put(`/users/${member._id}`, { status: newStatus });
+          showToast(`Member status updated to ${newStatus}`, "success");
+          fetchMembers();
+        } catch (err) {
+          showToast("Status update failed.", "error");
+        }
+      }
+    });
   };
+
 
   const handleEdit = (member) => {
     setEditingMember(member);
@@ -42,13 +53,19 @@ export default function MembersPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Remove this member permanently?")) return;
-    try {
-      await API.delete(`/users/${id}`);
-      fetchMembers();
-    } catch (err) {
-      alert("Error deleting member.");
-    }
+    confirm({
+      title: "Purge Record",
+      message: "Are you sure you want to remove this member permanently? This action is irreversible.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/users/${id}`);
+          showToast("Member record purged", "success");
+          fetchMembers();
+        } catch (err) {
+          showToast("Error deleting member.", "error");
+        }
+      }
+    });
   };
 
   const handleSubmit = async (formData) => {
@@ -59,23 +76,30 @@ export default function MembersPage() {
         await API.post("/users", formData);
       }
       setIsOpen(false);
+      showToast(editingMember ? "Record updated" : "Member registered", "success");
       fetchMembers();
     } catch (err) {
-      alert("Failed to save changes.");
+      showToast("Failed to save changes.", "error");
     }
   };
 
   const toggleAdmin = async (member) => {
     const newRole = member.role === "admin" ? "user" : "admin";
-    if (!window.confirm(`Change ${member.name}'s system role to ${newRole}?`)) return;
-    
-    try {
-      await API.put(`/users/${member._id}`, { role: newRole });
-      fetchMembers();
-    } catch (err) {
-      alert("Error updating role.");
-    }
+    confirm({
+      title: "Change System Role",
+      message: `Are you sure you want to change ${member.name}'s role to ${newRole}?`,
+      onConfirm: async () => {
+        try {
+          await API.put(`/users/${member._id}`, { role: newRole });
+          showToast(`Role updated to ${newRole}`, "success");
+          fetchMembers();
+        } catch (err) {
+          showToast("Error updating role.", "error");
+        }
+      }
+    });
   };
+
 
   return (
     <div className="bg-black min-h-screen text-gray-200 pb-20">
@@ -128,7 +152,7 @@ export default function MembersPage() {
                       <div className="flex items-center gap-6">
                         <div className="w-14 h-14 rounded-2xl bg-black border-2 border-white/5 overflow-hidden flex-shrink-0 shadow-2xl">
                           {member.photo ? (
-                            <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                            <img loading="lazy" src={member.photo} alt={member.name} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-brand text-xl font-black">{member.name.charAt(0)}</div>
                           )}

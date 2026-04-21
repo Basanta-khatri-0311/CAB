@@ -3,6 +3,8 @@ import API from "../api/axios";
 import Modal from "../components/ui/Modal";
 import PostForm from "../components/Admin/PostForm";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useConfirm } from "../context/ConfirmContext";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 
 export default function PostList() {
@@ -13,6 +15,8 @@ export default function PostList() {
   const [selectedPost, setSelectedPost] = useState(null);
   
   const { user } = useAuth();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const fetchPosts = async () => {
     try {
@@ -40,13 +44,19 @@ export default function PostList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this post?")) return;
-    try {
-      await API.delete(`/posts/${id}`);
-      fetchPosts();
-    } catch (err) {
-      alert("Error deleting post.");
-    }
+    confirm({
+      title: "Delete Post",
+      message: "Are you sure you want to remove this story? This cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/posts/${id}`);
+          showToast("Post deleted", "success");
+          fetchPosts();
+        } catch (err) {
+          showToast("Error deleting post.", "error");
+        }
+      }
+    });
   };
 
   const handleAdminSubmit = async (formData) => {
@@ -57,9 +67,10 @@ export default function PostList() {
         await API.post("/posts", formData);
       }
       setIsAdminModalOpen(false);
+      showToast(editingPost ? "Post updated" : "Post published", "success");
       fetchPosts();
     } catch (err) {
-      alert("Operation failed.");
+      showToast("Operation failed.", "error");
     }
   };
 
@@ -80,7 +91,7 @@ export default function PostList() {
           <div className="max-w-2xl">
             <span className="section-eyebrow tracking-[0.2em]">Latest Updates</span>
             <div className="flex items-center gap-6 mb-4">
-              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">Club News</h1>
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter">Club News</h1>
               {user?.role === 'admin' && (
                 <button 
                   onClick={handleAdd}
@@ -131,7 +142,7 @@ export default function PostList() {
 
               <div className="h-64 overflow-hidden relative">
                 {post.image ? (
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-110" />
+                  <img loading="lazy" src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-110" />
                 ) : (
                   <div className="w-full h-full bg-black flex items-center justify-center text-zinc-800 text-4xl font-black">
                     CAB
@@ -143,7 +154,7 @@ export default function PostList() {
                 </div>
               </div>
 
-              <div className="p-10 flex flex-col flex-grow">
+              <div className="p-6 md:p-10 flex flex-col flex-grow">
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">
                     {new Date(post.createdAt).toLocaleDateString()}
@@ -154,7 +165,7 @@ export default function PostList() {
                   </span>
                 </div>
 
-                <h2 className="text-3xl font-black text-white tracking-tighter mb-6 leading-tight group-hover:text-brand transition-colors">
+                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter mb-6 leading-tight group-hover:text-brand transition-colors">
                   {post.title}
                 </h2>
                 
@@ -203,7 +214,7 @@ export default function PostList() {
           <div className="flex flex-col">
             <div className="h-64 sm:h-96 w-full relative shrink-0">
               {selectedPost.image ? (
-                <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
+                <img loading="lazy" src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-black flex items-center justify-center text-zinc-900 text-6xl font-black">CAB</div>
               )}
@@ -218,7 +229,7 @@ export default function PostList() {
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">By {selectedPost.author?.name || "Official"}</span>
               </div>
 
-              <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter mb-8 leading-[1.1]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter mb-8 leading-[1.1]">
                 {selectedPost.title}
               </h2>
 

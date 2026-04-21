@@ -92,7 +92,7 @@ export default function PostForm({ initialData, onSubmit, onClose }) {
         </div>
         {form.image && (
           <div className="h-32 rounded-xl overflow-hidden border border-white/5 bg-black">
-             <img src={form.image} className="w-full h-full object-cover opacity-50" alt="Preview" />
+             <img loading="lazy" src={form.image} className="w-full h-full object-cover opacity-50" alt="Preview" />
           </div>
         )}
       </div>

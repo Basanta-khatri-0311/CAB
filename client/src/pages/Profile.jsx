@@ -73,7 +73,7 @@ export default function Profile() {
             <div className="relative mb-8 group">
               <div className="w-48 h-48 rounded-full bg-black mx-auto border-4 border-brand/20 group-hover:border-brand transition-all duration-500 overflow-hidden">
                 {formData.photo ? (
-                  <img src={formData.photo} alt={user.name} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={formData.photo} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-brand text-7xl font-black">
                     {user.name.charAt(0)}

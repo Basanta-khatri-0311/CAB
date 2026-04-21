@@ -3,6 +3,8 @@ import API from "../../api/axios";
 import Modal from "../../components/ui/Modal";
 import ProjectForm from "../../components/Admin/ProjectForm";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
+import { useConfirm } from "../../context/ConfirmContext";
 
 export default function ProjectsPage() {
   const { user } = useAuth();
@@ -11,7 +13,9 @@ export default function ProjectsPage() {
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
-
+  const { showToast } = useToast();
+  const confirm = useConfirm();
+  
   const fetchProjects = async () => {
     try {
       const res = await API.get("/projects");
@@ -39,13 +43,19 @@ export default function ProjectsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this project? This cannot be undone.")) return;
-    try {
-      await API.delete(`/projects/${id}`);
-      fetchProjects();
-    } catch (err) {
-      alert("Failed to delete project. Please try again.");
-    }
+    confirm({
+      title: "Delete Project",
+      message: "Are you sure you want to delete this project? This will remove all associated data forever.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/projects/${id}`);
+          showToast("Project deleted", "success");
+          fetchProjects();
+        } catch (err) {
+          showToast("Failed to delete project. Please try again.", "error");
+        }
+      }
+    });
   };
 
   const handleSubmit = async (formData) => {
@@ -56,9 +66,10 @@ export default function ProjectsPage() {
         await API.post("/projects", formData);
       }
       setIsOpen(false);
+      showToast(editingProject ? "Project updated" : "Project created", "success");
       fetchProjects();
     } catch (err) {
-      alert("Failed to save project. Please try again.");
+      showToast("Failed to save project.", "error");
     }
   };
 

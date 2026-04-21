@@ -6,6 +6,8 @@ import ProjectFinancialModal from "../components/ProjectFinancialModal";
 import Modal from "../components/ui/Modal";
 import ProjectForm from "../components/Admin/ProjectForm";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useConfirm } from "../context/ConfirmContext";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 
 const FILTERS = ["all", "planning", "ongoing", "completed"];
@@ -18,6 +20,8 @@ export default function Projects() {
   const [editingProject, setEditingProject] = useState(null);
   
   const { user } = useAuth();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const getProjects = () => {
     fetchProjects().then((data) => setProjects(data));
@@ -40,13 +44,19 @@ export default function Projects() {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm("Delete this project? This cannot be undone.")) return;
-    try {
-      await API.delete(`/projects/${id}`);
-      getProjects();
-    } catch (err) {
-      alert("Error deleting project.");
-    }
+    confirm({
+      title: "Delete Project",
+      message: "Are you sure you want to delete this project? This will remove all associated data forever.",
+      onConfirm: async () => {
+        try {
+          await API.delete(`/projects/${id}`);
+          showToast("Project deleted successfully", "success");
+          getProjects();
+        } catch (err) {
+          showToast("Error deleting project", "error");
+        }
+      }
+    });
   };
 
   const handleAdminSubmit = async (formData) => {
@@ -57,9 +67,10 @@ export default function Projects() {
         await API.post("/projects", formData);
       }
       setIsAdminModalOpen(false);
+      showToast(editingProject ? "Project updated" : "Project created", "success");
       getProjects();
     } catch (err) {
-      alert("Failed to save changes.");
+      showToast("Failed to save changes.", "error");
     }
   };
 
@@ -74,7 +85,7 @@ export default function Projects() {
           <div className="max-w-2xl">
             <span className="section-eyebrow tracking-[0.2em]">Our Initiatives</span>
             <div className="flex items-center gap-6 mb-4">
-              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">Club Projects</h1>
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter">Club Projects</h1>
               {user?.role === 'admin' && (
                 <button 
                   onClick={handleAdd}

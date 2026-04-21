@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function ProjectCard({ project, disableLink = false }) {
   const content = (
-    <div className="group bg-zinc-900 border border-white/5 rounded-3xl p-8 h-full flex flex-col justify-between transition-all duration-300 hover:border-brand/30 hover:-translate-y-1 shadow-2xl relative overflow-hidden">
+    <div className="group bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8 h-full flex flex-col justify-between transition-all duration-300 hover:border-brand/30 hover:-translate-y-1 shadow-2xl relative overflow-hidden">
       {/* Decorative background glow */}
       <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand/5 blur-3xl rounded-full group-hover:bg-brand/10 transition-colors" />
       

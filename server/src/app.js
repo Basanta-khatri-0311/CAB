@@ -21,18 +21,28 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: function (origin, callback) {
+    // 1. Allow no-origin requests (like mobile/Postman)
     if (!origin) return callback(null, true);
+
+    // 2. Normalize origin
     const cleanOrigin = origin.replace(/\/$/, "");
+
+    // 3. Get allowed domains from env or default
     const allowedOrigins = process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim().replace(/\/$/, ""))
-      : ["http://localhost:5173"];
-    
-    if (allowedOrigins.indexOf(cleanOrigin) === -1) {
-      return callback(new Error(`CORS policy blocked access from: ${origin}`), false);
+      : ["http://localhost:5173", "http://localhost:5500"];
+
+    // 4. Validate
+    if (allowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    } else {
+      console.warn(`Blocked by CORS: ${origin}`);
+      return callback(new Error('CORS Not Allowed'), false);
     }
-    return callback(null, true);
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // 2. Security Sanitizers (Must come AFTER body parsing)

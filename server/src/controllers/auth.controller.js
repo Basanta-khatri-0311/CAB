@@ -54,8 +54,8 @@ const loginUser = async (req, res) => {
       // Set HttpOnly Cookie
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure in production
-        sameSite: 'strict', // Prevent CSRF
+        secure: true, 
+        sameSite: 'none', 
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
 
@@ -78,6 +78,8 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
+    secure: true,
+    sameSite: 'none',
     expires: new Date(0)
   });
   res.status(200).json({ message: "Logged out successfully" });

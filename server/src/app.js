@@ -46,7 +46,7 @@ app.use(cors({
 }));
 
 // 2. Security Sanitizers (Must come AFTER body parsing)
-// app.use(mongoSanitize());
+app.use(mongoSanitize());
 app.use(hpp());
 
 // 3. Security & Optimization Headers

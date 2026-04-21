@@ -7,4 +7,13 @@ const API = axios.create({
   withCredentials: true,
 });
 
+// Add Bearer token for cross-domain deployment reliability
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export default API;

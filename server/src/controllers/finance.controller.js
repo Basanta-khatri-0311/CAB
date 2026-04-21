@@ -3,6 +3,10 @@ const Finance = require("../models/finance.model");
 // Add Finance Entry
 exports.addFinance = async (req, res) => {
   try {
+    // Sanitize memberId if it's an empty string
+    if (req.body.memberId === "") {
+        delete req.body.memberId;
+    }
     const finance = await Finance.create(req.body);
     res.status(201).json(finance);
   } catch (error) {

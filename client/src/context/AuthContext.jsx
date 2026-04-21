@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         const { data } = await API.get("/auth/me");
         setUser(data);
       } catch (err) {
-        console.log("No active session");
+        
         setUser(null);
       } finally {
         setLoading(false);

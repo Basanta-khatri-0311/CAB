@@ -4,7 +4,7 @@ const financeSchema = new mongoose.Schema(
   {
     donorType: {
       type: String,
-      enum: ["member", "outside", "project"],
+      enum: ["member", "outside", "project", "government", "other"],
       default: "member",
     },
     memberId: {

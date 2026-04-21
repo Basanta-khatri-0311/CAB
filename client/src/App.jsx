@@ -20,6 +20,7 @@ const FinancesPage = lazy(() => import("./pages/Admin/FinancesPage"));
 const AdminPostsPage = lazy(() => import("./pages/Admin/PostsPage"));
 const MembersPage = lazy(() => import("./pages/Admin/MembersPage"));
 const Profile = lazy(() => import("./pages/Profile"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Premium Loading Component
 const PageLoader = () => (
@@ -104,6 +105,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </main>

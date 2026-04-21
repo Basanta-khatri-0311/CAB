@@ -2,7 +2,16 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children, adminOnly = false }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  // Wait for AuthContext to check localStorage on mount
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div className="w-10 h-10 border-2 border-brand border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!user) return <Navigate to="/login" replace />;
 

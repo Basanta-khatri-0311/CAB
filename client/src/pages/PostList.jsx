@@ -1,3 +1,4 @@
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { useState, useEffect } from "react";
 import API from "../api/axios";
 import Modal from "../components/ui/Modal";
@@ -78,7 +79,7 @@ export default function PostList() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Loading Posts</p>
+        <p className="mt-4 text-xs font-bold tracking-widest text-gray-300 uppercase">Loading Posts</p>
       </div>
     );
   }
@@ -101,12 +102,12 @@ export default function PostList() {
                 </button>
               )}
             </div>
-            <p className="text-gray-500 text-xs max-w-lg leading-relaxed">
+            <p className="text-gray-300 text-xs max-w-lg leading-relaxed">
               Read the latest match reports and official club announcements.
             </p>
           </div>
           <div className="pb-1">
-             <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">{posts.length} Total Posts</span>
+             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{posts.length} Total Posts</span>
           </div>
         </div>
       </div>
@@ -142,7 +143,7 @@ export default function PostList() {
 
               <div className="h-64 overflow-hidden relative">
                 {post.image ? (
-                  <img loading="lazy" src={post.image} alt={post.title} className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-110" />
+                  <img loading="lazy" src={optimizeCloudinaryUrl(post.image)} alt={post.title} className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-110" />
                 ) : (
                   <div className="w-full h-full bg-black flex items-center justify-center text-zinc-800 text-4xl font-black">
                     CAB
@@ -156,11 +157,11 @@ export default function PostList() {
 
               <div className="p-6 md:p-10 flex flex-col flex-grow">
                 <div className="flex items-center gap-4 mb-6">
-                  <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">
+                  <span className="text-[10px] text-gray-300 font-black uppercase tracking-[0.2em]">
                     {new Date(post.createdAt).toLocaleDateString()}
                   </span>
                   <div className="w-1 h-1 rounded-full bg-brand/40"></div>
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                  <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
                     By {post.author?.name || "Member"}
                   </span>
                 </div>
@@ -169,7 +170,7 @@ export default function PostList() {
                   {post.title}
                 </h2>
                 
-                <p className="text-gray-500 text-sm leading-relaxed font-medium line-clamp-4 flex-grow mb-8">
+                <p className="text-gray-300 text-sm leading-relaxed font-medium line-clamp-4 flex-grow mb-8">
                   {post.content}
                 </p>
 
@@ -183,7 +184,7 @@ export default function PostList() {
 
         {posts.length === 0 && (
           <div className="py-40 text-center">
-             <p className="text-gray-700 font-bold tracking-[0.2em] uppercase text-xs">No news posts found</p>
+             <p className="text-gray-400 font-bold tracking-[0.2em] uppercase text-xs">No news posts found</p>
           </div>
         )}
       </div>
@@ -214,7 +215,7 @@ export default function PostList() {
           <div className="flex flex-col">
             <div className="h-64 sm:h-96 w-full relative shrink-0">
               {selectedPost.image ? (
-                <img loading="lazy" src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
+                <img loading="lazy" src={optimizeCloudinaryUrl(selectedPost.image)} alt={selectedPost.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-black flex items-center justify-center text-zinc-900 text-6xl font-black">CAB</div>
               )}
@@ -224,7 +225,7 @@ export default function PostList() {
             <div className="p-6 sm:p-10 -mt-10 relative z-10 bg-[#0a0a0a] backdrop-blur-3xl rounded-t-[3rem] border-t border-white/5">
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="px-3 py-1 rounded-full bg-brand text-black text-[9px] font-black uppercase tracking-widest shadow-xl">Club Update</span>
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">{new Date(selectedPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                <span className="text-[10px] text-gray-300 font-bold uppercase tracking-[0.2em]">{new Date(selectedPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
                 <div className="w-1 h-1 rounded-full bg-white/10"></div>
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">By {selectedPost.author?.name || "Official"}</span>
               </div>

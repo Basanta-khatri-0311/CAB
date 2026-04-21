@@ -40,19 +40,18 @@ export default function Navbar() {
               </>
             )}
 
-
-
             <div className="flex items-center gap-4 ml-4">
               {user ? (
                 <button 
                   onClick={logout}
                   className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border border-red-900/50 text-red-500 hover:bg-red-500 hover:text-white transition-all transform hover:scale-105"
+                  aria-label="Sign Out"
                 >
                   Sign Out
                 </button>
               ) : (
                 <div className="flex items-center gap-6">
-                  <Link to="/login" className="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest">Sign In</Link>
+                  <Link to="/login" className="text-xs font-bold text-gray-300 hover:text-white uppercase tracking-widest">Sign In</Link>
                   <Link to="/register" className="bg-brand hover:bg-brand-dark text-black px-5 py-2 rounded-full text-[10px] font-black tracking-widest uppercase transition-all transform hover:scale-105 shadow-xl shadow-brand/20">
                     Join Association
                   </Link>
@@ -66,6 +65,7 @@ export default function Navbar() {
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="text-gray-400 hover:text-white focus:outline-none"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {menuOpen ? (
@@ -96,7 +96,7 @@ export default function Navbar() {
               </>
             )}
             {user ? (
-              <button onClick={() => { logout(); setMenuOpen(false); }} className="w-full text-left px-3 py-4 text-base font-black text-red-500 uppercase">Sign Out</button>
+              <button onClick={() => { logout(); setMenuOpen(false); }} className="w-full text-left px-3 py-4 text-base font-black text-red-500 uppercase" aria-label="Sign Out">Sign Out</button>
             ) : (
               <Link to="/login" className="block px-3 py-4 text-base font-black text-brand uppercase" onClick={() => setMenuOpen(false)}>Sign In</Link>
             )}

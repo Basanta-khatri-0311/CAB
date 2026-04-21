@@ -1,3 +1,4 @@
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
@@ -25,7 +26,7 @@ export default function Home() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Loading Site...</p>
+        <p className="mt-4 text-xs font-bold tracking-widest text-gray-300 uppercase">Loading Site...</p>
       </div>
     );
   }
@@ -68,6 +69,7 @@ export default function Home() {
           src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=2070" 
           alt="Cricket Stadium" 
           className="absolute inset-0 w-full h-full object-cover scale-105"
+          fetchpriority="high"
         />
         
         <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
@@ -120,7 +122,7 @@ export default function Home() {
             { label: "Current Balance", value: stats.balance, color: "text-brand", bg: "bg-brand/5", border: "border-brand/20" },
           ].map((stat, i) => (
             <div key={i} className={`p-6 md:p-8 rounded-[2.5rem] border ${stat.bg} ${stat.border} backdrop-blur-sm group hover:border-white/10 transition-all shadow-2xl`}>
-              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2">Official Ledger: {stat.label}</p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-300 font-black mb-2">Official Ledger: {stat.label}</p>
               <p className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter ${stat.color}`}>
                 NPR {stat.value.toLocaleString()}
               </p>
@@ -191,11 +193,11 @@ export default function Home() {
                     {project.status}
                   </span>
                 </div>
-                <p className="text-gray-500 text-sm mb-10 line-clamp-3 leading-relaxed">{project.description}</p>
+                <p className="text-gray-300 text-sm mb-10 line-clamp-3 leading-relaxed">{project.description}</p>
               </div>
               <div className="flex justify-between items-end border-t border-white/5 pt-8">
                 <div>
-                  <p className="text-[10px] text-gray-700 uppercase tracking-[0.2em] mb-2 font-black">Allocation</p>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2 font-black">Allocation</p>
                   <p className="text-brand font-black text-xl tracking-tighter">NPR {project.estimatedBudget?.toLocaleString() || 0}</p>
                 </div>
                 <Link to="/projects" className="text-[9px] font-black text-white hover:underline underline-offset-4 uppercase tracking-widest">View More →</Link>
@@ -218,20 +220,20 @@ export default function Home() {
                 <article className="flex flex-col md:flex-row gap-8 items-center bg-black/40 p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-white/5 hover:border-brand/30 transition-all shadow-2xl">
                   {post.image && (
                     <div className="w-full md:w-64 h-48 rounded-[2rem] overflow-hidden flex-shrink-0 relative">
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover grayscale-0" loading="lazy" />
+                      <img src={optimizeCloudinaryUrl(post.image)} alt={post.title} className="w-full h-full object-cover grayscale-0" loading="lazy" />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all" />
                     </div>
                   )}
                   <div className="flex-grow">
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="text-[10px] text-gray-600 font-black tracking-widest uppercase">
+                      <span className="text-[10px] text-gray-400 font-black tracking-widest uppercase">
                         {new Date(post.createdAt).toLocaleDateString()}
                       </span>
                       <span className="w-1.5 h-1.5 rounded-full bg-brand/30" />
                       <span className="text-[10px] text-brand font-black tracking-widest uppercase tracking-[0.2em]">Official Archive</span>
                     </div>
                     <h3 className="text-3xl font-black text-white mb-6 leading-tight group-hover:text-brand transition-colors tracking-tighter">{post.title}</h3>
-                    <p className="text-gray-500 text-sm mb-0 line-clamp-2 leading-relaxed">{post.content}</p>
+                    <p className="text-gray-300 text-sm mb-0 line-clamp-2 leading-relaxed">{post.content}</p>
                   </div>
                   <div className="hidden md:flex items-center justify-center w-14 h-14 rounded-full border border-white/5 group-hover:border-brand/40 group-hover:text-brand transition-all text-xl">
                     →
@@ -253,7 +255,7 @@ function MemberSmallCard({ member }) {
     <div className="group relative bg-[#080808] rounded-[3rem] overflow-hidden border border-white/5 hover:border-brand/40 transition-all shadow-xl">
       <div className="aspect-[4/5] overflow-hidden">
         {member.photo ? (
-          <img src={member.photo} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+          <img src={optimizeCloudinaryUrl(member.photo)} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
         ) : (
           <div className="flex items-center justify-center h-full text-brand text-7xl font-black bg-black">
             {member.name.charAt(0)}
@@ -270,7 +272,7 @@ function MemberSmallCard({ member }) {
            ))}
         </div>
         <h3 className="text-2xl font-black text-white mb-2 tracking-tighter">{member.name}</h3>
-        <p className="text-gray-500 text-[11px] line-clamp-2 font-medium leading-relaxed uppercase tracking-wide">{member.bio}</p>
+        <p className="text-gray-300 text-[11px] line-clamp-2 font-medium leading-relaxed uppercase tracking-wide">{member.bio}</p>
       </div>
     </div>
   );

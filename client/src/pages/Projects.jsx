@@ -141,6 +141,7 @@ export default function Projects() {
                       onClick={(e) => handleEdit(project, e)}
                       className="w-8 h-8 rounded-full bg-black/80 border border-white/10 flex items-center justify-center text-xs text-brand hover:bg-brand hover:text-black transition-all shadow-xl"
                       title="Edit Project"
+                      aria-label="Edit Project"
                     >
                       <HiPencil size={14} />
                     </button>
@@ -148,6 +149,7 @@ export default function Projects() {
                       onClick={(e) => handleDelete(project._id, e)}
                       className="w-8 h-8 rounded-full bg-black/80 border border-white/10 flex items-center justify-center text-xs text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-xl"
                       title="Delete Project"
+                      aria-label="Delete Project"
                     >
                       <HiTrash size={14} />
                     </button>

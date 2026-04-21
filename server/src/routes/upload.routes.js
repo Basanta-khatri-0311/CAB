@@ -8,11 +8,21 @@ const router = express.Router();
 const upload = multer({ storage });
 
 router.post('/', protect, adminOnly, upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send({ message: 'No file uploaded' });
+  try {
+    if (!req.file) {
+      return res.status(400).send({ message: 'No file uploaded' });
+    }
+    // Cloudinary returns the full URL in req.file.path or req.file.secure_url
+    const imageUrl = req.file.path || req.file.secure_url;
+    res.send(imageUrl);
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    res.status(500).send({ 
+      message: 'Image upload failed', 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    });
   }
-  // Cloudinary returns the full URL in req.file.path (or req.file.secure_url depending on multer-storage-cloudinary version)
-  res.send(req.file.path || req.file.secure_url);
 });
 
 module.exports = router;

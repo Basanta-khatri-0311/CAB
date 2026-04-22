@@ -7,7 +7,7 @@ const router = express.Router();
 
 const upload = multer({ storage });
 
-router.post('/', protect, adminOnly, upload.single('image'), (req, res) => {
+router.post('/', protect, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send({ message: 'No file uploaded' });

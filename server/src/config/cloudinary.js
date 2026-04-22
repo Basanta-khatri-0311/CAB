@@ -14,7 +14,6 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'cab_uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'pdf'],
     resource_type: 'auto',
   },
 });

@@ -129,8 +129,9 @@ export default function Home() {
 
   const { stats, members, posts, projects } = data;
 
-  const committeeRoles = ["President", "Vice President", "Treasurer", "Secretary", "Senior Player", "Advisor"];
-  const squadRoles = ["Captain", "Vice Captain", "Wicket Keeper", "Player"];
+  const committeeRoles = ["President", "Vice President", "Treasurer", "Secretary", "Advisor", "Member", "Senior Player"];
+  const squadRoles = ["Captain", "Vice Captain", "Wicket Keeper", "Player", "Batsman", "Bowler", "All-rounder"];
+  const supportRoles = ["Coach", "Staff", "Supporter"];
 
   const committee = members.filter(m => {
     const roles = Array.isArray(m.roleInClub) ? m.roleInClub : [m.roleInClub];
@@ -140,6 +141,11 @@ export default function Home() {
   const squad = members.filter(m => {
     const roles = Array.isArray(m.roleInClub) ? m.roleInClub : [m.roleInClub];
     return roles.some(role => squadRoles.includes(role));
+  });
+
+  const support = members.filter(m => {
+    const roles = Array.isArray(m.roleInClub) ? m.roleInClub : [m.roleInClub];
+    return roles.some(role => supportRoles.includes(role));
   });
 
   return (
@@ -181,7 +187,7 @@ export default function Home() {
         </div>
 
         <div className="relative flex overflow-hidden group">
-          <div className="flex animate-marquee-right whitespace-nowrap gap-8 py-4 group-hover:[animation-play-state:paused]">
+          <div className="flex animate-marquee-right whitespace-nowrap gap-8 py-4">
             {[...committee, ...committee].map((member, i) => (
               <div key={`${member._id}-${i}`} className="w-[300px] flex-shrink-0 transition-opacity hover:opacity-100 group-hover:opacity-50">
                  <MemberSmallCard member={member} />
@@ -204,7 +210,7 @@ export default function Home() {
         </div>
 
         <div className="relative flex overflow-hidden group">
-          <div className="flex animate-marquee-left whitespace-nowrap gap-8 py-4 group-hover:[animation-play-state:paused]">
+          <div className="flex animate-marquee-left whitespace-nowrap gap-8 py-4">
             {[...squad, ...squad].map((member, i) => (
               <div key={`${member._id}-${i}`} className="w-[300px] flex-shrink-0 transition-opacity hover:opacity-100 group-hover:opacity-50">
                  <MemberSmallCard member={member} />
@@ -215,6 +221,31 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10" />
         </div>
       </section>
+
+      {/* ── Support Marquee ── */}
+      {support.length > 0 && (
+        <section className="py-24 bg-white/[0.02] border-b border-white/5 overflow-hidden font-sans">
+          <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+             <div className="text-left">
+                <span className="section-eyebrow uppercase">Backbone</span>
+                <h2 className="text-4xl font-black text-white tracking-tighter uppercase underline decoration-brand/30 underline-offset-8">Support & Staff</h2>
+             </div>
+             <Link to="/members" className="text-brand text-xs font-black uppercase tracking-widest hover:underline underline-offset-8">All Profiles →</Link>
+          </div>
+
+          <div className="relative flex overflow-hidden group">
+            <div className="flex animate-marquee-right whitespace-nowrap gap-8 py-4">
+              {[...support, ...support].map((member, i) => (
+                <div key={`${member._id}-${i}`} className="w-[300px] flex-shrink-0 transition-opacity hover:opacity-100 group-hover:opacity-50">
+                   <MemberSmallCard member={member} />
+                </div>
+              ))}
+            </div>
+            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-black to-transparent z-10" />
+            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10" />
+          </div>
+        </section>
+      )}
 
       {/* Projects */}
       <section className="py-24 max-w-7xl mx-auto px-6 font-sans">

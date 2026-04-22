@@ -109,7 +109,7 @@ export default function Register() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest ml-3">Short Bio / Player Role</label>
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest ml-3">Short Bio / Club Role</label>
             <textarea
               placeholder="Tell us about yourself..."
               value={formData.bio}

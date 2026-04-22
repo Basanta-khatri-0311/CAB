@@ -21,8 +21,8 @@ export default function Members() {
     fetchMembers();
   }, []);
 
-  const committeeRoles = ["President", "Vice President", "Treasurer", "Secretary", "Senior Player", "Advisor"];
-  const squadRoles = ["Captain", "Vice Captain", "Wicket Keeper", "Player"];
+  const committeeRoles = ["President", "Vice President", "Treasurer", "Secretary", "Advisor", "Member", "Senior Player"];
+  const squadRoles = ["Captain", "Vice Captain", "Wicket Keeper", "Player", "Batsman", "Bowler", "All-rounder"];
 
   // Members can appear in multiple lists if they have multiple roles
   const committee = members.filter(m => {

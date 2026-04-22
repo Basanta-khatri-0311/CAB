@@ -188,7 +188,7 @@ export default function MembersPage() {
                        )}
                     </td>
                     <td className="px-10 py-8">
-                       <p className="text-white font-bold text-xs tracking-tight">{(Array.isArray(member.roleInClub) ? member.roleInClub : [member.roleInClub || 'Player']).join(' • ')}</p>
+                       <p className="text-white font-bold text-xs tracking-tight">{(Array.isArray(member.roleInClub) ? member.roleInClub : [member.roleInClub || 'Member']).join(' • ')}</p>
                     </td>
                     <td className="px-10 py-8 text-right underline underline-offset-4 decoration-white/5">
                       <div className="flex justify-end gap-4">

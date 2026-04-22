@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow indexing of the admin dashboard and profile pages for security/privacy
+Disallow: /admin/
+Disallow: /profile/
+
+# Specify the sitemap location (optional, but good practice)
+Sitemap: https://ca-bhaluhi.netlify.app/sitemap.xml

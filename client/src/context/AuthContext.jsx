@@ -10,10 +10,20 @@ export const AuthProvider = ({ children }) => {
   // Rehydrate Session on Mount
   useEffect(() => {
     const rehydrate = async () => {
+      const token = localStorage.getItem("token");
+      
+      // Don't call API if there's no token (avoiding 401s on public view)
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data } = await API.get("/auth/me");
         setUser(data);
       } catch (err) {
+        // If token is invalid or expired, clean up
+        localStorage.removeItem("token");
         setUser(null);
       } finally {
         setLoading(false);

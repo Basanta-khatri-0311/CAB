@@ -1,114 +1,96 @@
-# Cricket Association of Bhaluhi (CAB) Portal
+# 🏏 Cricket Association of Bhaluhi (CAB) Portal
 
-A premium, full-stack web application designed for the Cricket Association of Bhaluhi. This portal serves as a central hub for managing club activities, member directories, financial transparency, and facility bookings.
+[![Performance](https://img.shields.io/badge/Lighthouse-90+-emerald)](https://ca-bhaluhi.netlify.app/)
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)](https://nodejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)](https://vitejs.dev/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 
-![CAB Design](https://img.shields.io/badge/Design-Midnight--Amber-amber)
-![React](https://img.shields.io/badge/React-19-blue)
-![Vite](https://img.shields.io/badge/Vite-8-purple)
-![Tailwind](https://img.shields.io/badge/Tailwind-4-38b2ac)
-![Node.js](https://img.shields.io/badge/Node.js-Express-green)
-
----
-
-## 🌟 Key Features
-
-### 🏏 Public Features
-- **Project Gallery**: Browse through association projects and tournament highlights.
-- **Member Directory**: View all registered members and their profiles.
-- **News & Posts**: Stay updated with the latest announcements and cricket news from Bhaluhi.
-- **Ground Booking**: Integrated system for booking ground facilities.
-- **Transparency Portal**: Public/Authorized view of association finances and activities.
-
-### 🔐 Member & Admin Features
-- **User Authentication**: Secure Login/Register system using JWT.
-- **Admin Dashboard**: Comprehensive management interface for:
-  - **Projects**: Create and update association projects.
-  - **Finances**: Log and track income/expenses.
-  - **Posts**: Manage news and blogs.
-  - **Bookings**: Oversee and approve facility requests.
-  - **Members**: Manage the association's member database.
-- **Profile Management**: Members can update their personal information.
+The **Cricket Association of Bhaluhi (CAB) Portal** is a high-performance, full-stack management system built on the MERN stack. Designed with a premium "Midnight-Amber" aesthetic, it serves as the association's digital headquarters for financial transparency, member coordination, and community engagement.
 
 ---
 
-## 🛠 Tech Stack
+## 🚀 Optimized Performance & UX
+This portal has been engineered for a "Green" Lighthouse score across all metrics:
+- **LCP (Largest Contentful Paint)**: Optimized via **WebP asset conversion**, HTML preloading, and `fetchpriority` hints.
+- **CLS (Cumulative Layout Shift)**: Resolved using high-fidelity **Content Skeletons** and controlled component-level footers.
+- **Asset Delivery**: Implemented **Manual Chunk Splitting** in Vite to ensure heavy libraries (Axios, React Router) are cached independently.
+- **Responsive Images**: Custom Cloudinary integration with on-the-fly width optimization (`w_800`, `w_600`).
+- **Zero-Dependency Charts**: Replaced heavy charting libraries with a bespoke **SVG Financial Engine** for instant rendering.
+
+---
+
+## 🌟 Core Features
+
+### 🏛 The Treasury (Transparency Portal)
+- Real-time tracking of association income and expenses.
+- Detailed project-level financial breakdowns with interactive SVG visualizations.
+- Secure, member-only access to detailed transaction ledgers.
+
+### 👥 The Squad & Board
+- Dynamic member directory with professional profile cards.
+- Multi-role support (President, Captain, Advisor, etc.).
+- Integrated bio and athlete tracking system.
+
+### 📰 Newsroom & Milestones
+- Rich-text newsfeed for official association announcements.
+- Project tracking system documenting association initiatives from 'Ongoing' to 'Completed'.
+
+### 🔐 Security & Administration
+- **Secure Auth**: Migration to **HttpOnly Cookies** and JWT for robust session management.
+- **Admin Dashboard**: Full CRUD capabilities for projects, members, finances, and news.
+- **Global Error Handling**: Centralized system ensuring the app remains stable during server downtimes.
+
+---
+
+## 🛠 Technical Architecture
 
 ### Frontend
-- **Framework**: [React 19](https://reactjs.org/)
-- **Build Tool**: [Vite 8](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Routing**: React Router 7
-- **Icons**: React Icons
-- **Flash Messages**: Integrated Toast system
+- **React 19 / Vite 8**: Bleeding-edge build tools for near-instant HMR.
+- **Tailwind CSS 4**: Modern, utility-first styling with custom "Midnight" design tokens.
+- **Lazy Loading**: Route-based code splitting to reduce the initial JS payload.
 
 ### Backend
-- **Runtime**: [Node.js](https://nodejs.org/)
-- **Framework**: [Express 5](https://expressjs.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) with Mongoose 9
-- **Authentication**: JWT & Bcryptjs
-- **File Uploads**: Multer
+- **Express 5**: High-performance Node.js framework.
+- **MongoDB / Mongoose**: Optimized schemas with relationship population for complex data structures.
+- **Security Middleware**: CORS, Helmet, and cookie-parser for production hardening.
 
 ---
 
-## 🚀 Getting Started
+## 📂 Installation & Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB account (Atlas or Local)
+- Node.js v20+
+- MongoDB Instance (Local or Atlas)
+- Cloudinary Account (for image hosting)
 
-### Installation
+### 1. Clone & Install
+```bash
+git clone <repository-url>
+cd CAB
+npm install # Installs root dependencies
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd CAB
-   ```
+### 2. Environment Configuration
+Create a `.env` file in the `/server` directory:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_secret_key
+NODE_ENV=production
+CLIENT_URL=http://localhost:5173
+```
 
-2. **Setup Server**
-   ```bash
-   cd server
-   npm install
-   # Create a .env file based on .env.example (if available)
-   # Required: MONGO_URI, JWT_SECRET, PORT
-   npm run dev
-   ```
+### 3. Launch Development Environment
+```bash
+# Terminal 1 (Backend)
+cd server && npm run dev
 
-3. **Setup Client**
-   ```bash
-   cd ../client
-   npm install
-   npm run dev
-   ```
-
----
-
-## 📂 Project Structure
-
-```text
-CAB/
-├── client/              # React frontend (Vite)
-│   ├── src/
-│   │   ├── components/  # Reusable UI components
-│   │   ├── pages/       # Page views & Admin panels
-│   │   └── App.jsx      # Main routing logic
-├── server/              # Node.js backend
-│   ├── src/
-│   │   ├── config/      # DB connection
-│   │   ├── models/      # Mongoose schemas
-│   │   ├── routes/      # API endpoints
-│   │   └── server.js    # Entry point
-└── uploads/             # Managed file storage
+# Terminal 2 (Frontend)
+cd client && npm run dev
 ```
 
 ---
 
-## 🎨 Design System
-The application follows a bespoke **"Midnight-Amber"** aesthetic:
-- **Primary Background**: Sleek dark modes.
-- **Accent**: Vibrant Amber transitions.
-- **Typography**: Clean, modern font stacks.
-
----
-
 ## 📄 License
-This project is licensed under the ISC License.
+This project is licensed under the **ISC License**. Designed and developed for the community of Bhaluhi.

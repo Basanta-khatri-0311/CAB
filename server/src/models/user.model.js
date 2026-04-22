@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     roleInClub: {
       type: [String],
-      default: ["Player"],
+      default: ["Member"],
     },
     phone: {
       type: String,

@@ -14,9 +14,8 @@ export const optimizeCloudinaryUrl = (url, width = 800) => {
   const transformation = `f_auto,q_auto,w_${width}`;
   
   if (url.includes('/upload/')) {
-    // If there's already a transformation block (e.g. /upload/v123 or /upload/f_auto/v123)
-    // we want to ensure our optimized parameters are there.
-    return url.replace(/\/upload\/(?:[^\/]+\/)?/, `/upload/${transformation}/`);
+    // Safely insert transformations right after /upload/
+    return url.replace('/upload/', `/upload/${transformation}/`);
   }
 
   return url;

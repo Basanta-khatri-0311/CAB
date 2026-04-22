@@ -9,6 +9,32 @@ export default function Profile() {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [passData, setPassData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [passUpdating, setPassUpdating] = useState(false);
+  const [passMessage, setPassMessage] = useState({ type: "", text: "" });
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (passData.newPassword !== passData.confirmPassword) {
+      setPassMessage({ type: "error", text: "New passwords do not match" });
+      return;
+    }
+    setPassUpdating(true);
+    try {
+      await API.put("/users/profile/password", {
+        currentPassword: passData.currentPassword,
+        newPassword: passData.newPassword
+      });
+      setPassMessage({ type: "success", text: "Password updated successfully!" });
+      setPassData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setTimeout(() => setPassMessage({ type: "", text: "" }), 3000);
+    } catch (err) {
+      setPassMessage({ type: "error", text: err.response?.data?.message || "Failed to update password" });
+    } finally {
+      setPassUpdating(false);
+    }
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -137,6 +163,71 @@ export default function Profile() {
                   className="w-full bg-brand hover:bg-brand-dark text-black font-black uppercase tracking-widest py-5 rounded-2xl transition-all shadow-xl shadow-brand/20 disabled:opacity-50"
                 >
                   {updating ? "Updating..." : "Update Official Records"}
+                </button>
+              </form>
+            </div>
+
+            {/* Security Section (Change Password) */}
+            <div className="bg-zinc-900/40 border border-white/5 rounded-[3rem] p-12 backdrop-blur-sm shadow-xl">
+              <div className="flex items-center gap-4 mb-8">
+                 <div className="p-3 rounded-2xl bg-brand/10 border border-brand/20">
+                    <span className="text-brand">🔐</span>
+                 </div>
+                 <h2 className="text-2xl font-black text-white tracking-tighter decoration-brand/30 underline underline-offset-8">Access Security</h2>
+              </div>
+              
+              {passMessage.text && (
+                <div className={`px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest text-center mb-8 border ${
+                  passMessage.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'
+                }`}>
+                  {passMessage.text}
+                </div>
+              )}
+
+              <form onSubmit={handlePasswordSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Current Password</label>
+                  <input 
+                    type="password" 
+                    value={passData.currentPassword} 
+                    onChange={e => setPassData({...passData, currentPassword: e.target.value})} 
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:border-brand/50 transition-colors" 
+                    required 
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">New Password</label>
+                    <input 
+                      type="password" 
+                      value={passData.newPassword} 
+                      onChange={e => setPassData({...passData, newPassword: e.target.value})} 
+                      className="w-full bg-black/50 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:border-brand/50 transition-colors" 
+                      required 
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Confirm New Password</label>
+                    <input 
+                      type="password" 
+                      value={passData.confirmPassword} 
+                      onChange={e => setPassData({...passData, confirmPassword: e.target.value})} 
+                      className="w-full bg-black/50 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:border-brand/50 transition-colors" 
+                      required 
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={passUpdating}
+                  className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black uppercase tracking-widest py-5 rounded-2xl transition-all disabled:opacity-50"
+                >
+                  {passUpdating ? "Updating Security..." : "Change Account Password"}
                 </button>
               </form>
             </div>

@@ -109,7 +109,6 @@ function App() {
             </Routes>
           </Suspense>
         </main>
-        <Footer />
       </div>
     </Router>
   );

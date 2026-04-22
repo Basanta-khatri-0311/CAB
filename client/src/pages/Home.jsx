@@ -2,8 +2,8 @@ import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
-
-import heroBg from "../assets/hero-bg.jpg";
+import Footer from "../components/Footer";
+import heroBg from "../assets/hero-bg.webp";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -23,8 +23,6 @@ export default function Home() {
     };
     fetchHomeData();
   }, []);
-
-
 
   const isLoggedIn = !!localStorage.getItem("token");
 
@@ -109,6 +107,7 @@ export default function Home() {
             ))}
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -123,6 +122,7 @@ export default function Home() {
             <button onClick={() => window.location.reload()} className="mt-4 text-sm text-gray-400 underline uppercase tracking-widest font-black">Try Reconnecting</button>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -283,6 +283,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

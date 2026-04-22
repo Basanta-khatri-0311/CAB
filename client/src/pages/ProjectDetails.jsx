@@ -93,6 +93,7 @@ export default function ProjectDetails() {
             </Link>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -237,6 +238,7 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

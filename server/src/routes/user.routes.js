@@ -6,7 +6,8 @@ const {
   updateUser,
   deleteUser,
   getProfile,
-  updateProfile
+  updateProfile,
+  changePassword
 } = require("../controllers/user.controller");
 const { protect, adminOnly } = require("../middleware/auth.middleware");
 
@@ -15,6 +16,7 @@ router.use(protect);
 // Personal profile (Any logged in user)
 router.get("/profile", getProfile);
 router.put("/profile", updateProfile);
+router.put("/profile/password", changePassword);
 
 // Admin-level management
 router.use(adminOnly);

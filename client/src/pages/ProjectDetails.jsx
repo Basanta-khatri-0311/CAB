@@ -1,11 +1,36 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchProjectById } from "../services/projects.api";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+function SimplePieChart({ income, expense }) {
+  const total = income + expense || 1;
+  const incomeRatio = income / total;
+  const strokeDasharray = `${incomeRatio * 100} ${100 - (incomeRatio * 100)}`;
 
-const COLORS = ["#10b981", "#ef4444"];
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      <svg viewBox="0 0 42 42" className="w-48 h-48 transform -rotate-90">
+        <circle
+          cx="21" cy="21" r="15.915"
+          fill="transparent"
+          stroke="#ef4444"
+          strokeWidth="6"
+        />
+        <circle
+          cx="21" cy="21" r="15.915"
+          fill="transparent"
+          stroke="#10b981"
+          strokeWidth="6"
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset="0"
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Cash Flow</span>
+      </div>
+    </div>
+  );
+}
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -26,11 +51,6 @@ export default function ProjectDetails() {
     );
 
   const { project, totalIncome, totalExpense, remainingBalance, transactions } = projectData;
-
-  const pieData = [
-    { name: "Income", value: totalIncome || 0 },
-    { name: "Expense", value: totalExpense || 0 },
-  ];
 
   // If still not logged in after check, show restricted view
   if (!user) {
@@ -201,28 +221,7 @@ export default function ProjectDetails() {
             <div className="bg-zinc-900 border border-white/5 rounded-[2.5rem] p-8 sticky top-24">
               <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-8">Cash Analysis</h3>
               <div className="h-[240px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={8}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {pieData.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} cornerRadius={4} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '12px' }}
-                      itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                 <SimplePieChart income={totalIncome} expense={totalExpense} />
               </div>
               <div className="mt-6 flex justify-around text-center">
                 <div>

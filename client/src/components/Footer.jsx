@@ -119,10 +119,10 @@ export default function Footer() {
 
       {/* ── Bottom bar ── */}
       <div className="max-w-7xl mx-auto px-6 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
+        <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
           © {new Date().getFullYear()} <span className="text-gray-300">Cricket Association of Bhaluhi.</span> All rights reserved.
         </p>
-        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+        <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
            <span className="w-1.5 h-1.5 rounded-full bg-brand" /> Built for the community
         </p>
       </div>

@@ -93,7 +93,7 @@ export default function Profile() {
         <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12 items-start">
           
           {/* Left: Profile Card */}
-          <div className="bg-zinc-900 border border-white/5 rounded-[3rem] p-12 text-center sticky top-24 shadow-2xl overflow-hidden">
+          <div className="bg-zinc-900 border border-white/5 rounded-[3rem] p-12 text-center relative lg:sticky lg:top-24 shadow-2xl overflow-hidden">
             <div className="absolute top-0 left-0 w-32 h-32 bg-brand/5 blur-3xl rounded-full" />
             
             <div className="relative mb-8 group">
@@ -139,7 +139,7 @@ export default function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Profile Photo</label>
-                    <input type="file" onChange={uploadFileHandler} className="w-full bg-black/50 border border-white/10 rounded-2xl px-6 py-4 text-xs font-mono text-gray-400 focus:outline-none focus:border-brand/50 transition-colors" />
+                    <input type="file" accept="image/*" onChange={uploadFileHandler} className="w-full bg-black/50 border border-white/10 rounded-2xl px-6 py-4 text-xs font-mono text-gray-400 focus:outline-none focus:border-brand/50 transition-colors" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-4">Full Name</label>

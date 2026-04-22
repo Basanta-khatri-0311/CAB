@@ -18,8 +18,8 @@
     to { transform: translateX(0); }
   }
 
-  --animate-marquee-left: scroll-left 5s linear infinite;
-  --animate-marquee-right: scroll-right 5s linear infinite;
+  --animate-marquee-left: scroll-left 10s linear infinite;
+  --animate-marquee-right: scroll-right 10s linear infinite;
 }
 
 @layer base {

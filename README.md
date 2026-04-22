@@ -8,17 +8,7 @@
 
 The **Cricket Association of Bhaluhi (CAB) Portal** is a high-performance, full-stack management system built on the MERN stack. Designed with a premium "Midnight-Amber" aesthetic, it serves as the association's digital headquarters for financial transparency, member coordination, and community engagement.
 
----
 
-## 🚀 Optimized Performance & UX
-This portal has been engineered for a "Green" Lighthouse score across all metrics:
-- **LCP (Largest Contentful Paint)**: Optimized via **WebP asset conversion**, HTML preloading, and `fetchpriority` hints.
-- **CLS (Cumulative Layout Shift)**: Resolved using high-fidelity **Content Skeletons** and controlled component-level footers.
-- **Asset Delivery**: Implemented **Manual Chunk Splitting** in Vite to ensure heavy libraries (Axios, React Router) are cached independently.
-- **Responsive Images**: Custom Cloudinary integration with on-the-fly width optimization (`w_800`, `w_600`).
-- **Zero-Dependency Charts**: Replaced heavy charting libraries with a bespoke **SVG Financial Engine** for instant rendering.
-
----
 
 ## 🌟 Core Features
 

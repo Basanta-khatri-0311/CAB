@@ -8,6 +8,18 @@
   --color-border: #1a1a1a;
   --font-body: "Poppins", sans-serif;
   --font-display: "Poppins", sans-serif;
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes scroll-right {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+
+  --animate-marquee-left: scroll-left 5s linear infinite;
+  --animate-marquee-right: scroll-right 5s linear infinite;
 }
 
 @layer base {

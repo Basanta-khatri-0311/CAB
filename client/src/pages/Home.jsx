@@ -170,47 +170,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Committee Section */}
-      {committee.length > 0 && (
-        <section className="py-24 bg-white/[0.02] border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 font-sans">
-              <div className="text-left">
-                <span className="section-eyebrow uppercase">Governance</span>
-                <h2 className="text-4xl font-black text-white tracking-tighter uppercase underline decoration-brand/30 underline-offset-8">Board Members</h2>
+      {/* ── Board Members Marquee ── */}
+      <section className="py-24 bg-white/[0.02] border-t border-white/5 overflow-hidden font-sans">
+        <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+           <div className="text-left">
+              <span className="section-eyebrow uppercase">Governance</span>
+              <h2 className="text-4xl font-black text-white tracking-tighter uppercase underline decoration-brand/30 underline-offset-8">Board Members</h2>
+           </div>
+           <Link to="/members" className="text-brand text-xs font-black uppercase tracking-widest hover:underline underline-offset-8">All Profiles →</Link>
+        </div>
+
+        <div className="relative flex overflow-hidden group">
+          <div className="flex animate-marquee-right whitespace-nowrap gap-8 py-4 group-hover:[animation-play-state:paused]">
+            {[...committee, ...committee].map((member, i) => (
+              <div key={`${member._id}-${i}`} className="w-[300px] flex-shrink-0 transition-opacity hover:opacity-100 group-hover:opacity-50">
+                 <MemberSmallCard member={member} />
               </div>
-              <Link to="/members" className="text-brand text-xs font-black uppercase tracking-widest hover:underline underline-offset-8">All Profiles →</Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-              {committee.slice(0, 3).map((member) => (
-                <MemberSmallCard key={member._id} member={member} />
-              ))}
-            </div>
+            ))}
           </div>
-        </section>
-      )}
+          <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-black to-transparent z-10" />
+          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10" />
+        </div>
+      </section>
 
-      {/* Squad Section */}
-      {squad.length > 0 && (
-        <section className="py-24 bg-black border-y border-white/5">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 font-sans">
-              <div className="text-left">
-                <span className="section-eyebrow uppercase">The Athletes</span>
-                <h2 className="text-4xl font-black text-white tracking-tighter uppercase underline decoration-brand/30 underline-offset-8">The Squad</h2>
+      {/* ── Squad Marquee ── */}
+      <section className="py-24 bg-black border-y border-white/5 overflow-hidden font-sans">
+        <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+           <div className="text-left">
+              <span className="section-eyebrow uppercase">The Athletes</span>
+              <h2 className="text-4xl font-black text-white tracking-tighter uppercase underline decoration-brand/30 underline-offset-8">The Squad</h2>
+           </div>
+           <Link to="/members" className="text-brand text-xs font-black uppercase tracking-widest hover:underline underline-offset-8">View Roster →</Link>
+        </div>
+
+        <div className="relative flex overflow-hidden group">
+          <div className="flex animate-marquee-left whitespace-nowrap gap-8 py-4 group-hover:[animation-play-state:paused]">
+            {[...squad, ...squad].map((member, i) => (
+              <div key={`${member._id}-${i}`} className="w-[300px] flex-shrink-0 transition-opacity hover:opacity-100 group-hover:opacity-50">
+                 <MemberSmallCard member={member} />
               </div>
-              <Link to="/members" className="text-brand text-xs font-black uppercase tracking-widest hover:underline underline-offset-8">View Roster →</Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {squad.slice(0, 4).map((member) => (
-                <MemberSmallCard key={member._id} member={member} />
-              ))}
-            </div>
+            ))}
           </div>
-        </section>
-      )}
+          <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-black to-transparent z-10" />
+          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10" />
+        </div>
+      </section>
 
       {/* Projects */}
       <section className="py-24 max-w-7xl mx-auto px-6 font-sans">

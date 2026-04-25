@@ -8,8 +8,6 @@
 
 The **Cricket Association of Bhaluhi (CAB) Portal** is a high-performance, full-stack management system built on the MERN stack. Designed with a premium "Midnight-Amber" aesthetic, it serves as the association's digital headquarters for financial transparency, member coordination, and community engagement.
 
-
-
 ## 🌟 Core Features
 
 ### 🏛 The Treasury (Transparency Portal)

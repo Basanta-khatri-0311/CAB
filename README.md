@@ -59,7 +59,6 @@ git clone <repository-url>
 cd CAB
 npm install # Installs root dependencies
 ```
-
 ### 2. Environment Configuration
 Create a `.env` file in the `/server` directory:
 ```env

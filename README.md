@@ -68,9 +68,6 @@ JWT_SECRET=your_secret_key
 NODE_ENV=production
 CLIENT_URL=http://localhost:5173
 ```
-
-
-
 ### 3. Launch Development Environment
 ```bash
 # Terminal 1 (Backend)

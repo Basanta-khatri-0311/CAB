@@ -95,10 +95,12 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 
+
 // Health Check Endpoint (System Design Practice)
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "healthy", timestamp: new Date().toISOString() });
 });
+
 
 // Test Route
 app.get("/", (req, res) => {

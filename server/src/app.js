@@ -16,6 +16,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express()
 
+
 // 1. Basic Middlewares (Parse data first)
 app.use(express.json());
 app.use(cookieParser());
